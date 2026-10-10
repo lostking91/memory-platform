@@ -34,17 +34,50 @@ memory-platform/
 
 ## 启动
 
-```bash
-# 1. BFF（:8002）
-cd memory-platform/server
-.venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8002
+> 命令在 **Git Bash** 下执行。本项目自身两个进程：BFF（:8002）+ 前端（:5174）。BFF 只读直连 GM Postgres（:5433），**不依赖 GM API/Worker 进程**，但要求 `memory-cmic-postgres` 容器在运行。
 
-# 2. 前端（:5174，代理 /api → :8002）
-cd memory-platform/frontend
-node node_modules/vite/bin/vite.js
+### 前置
+
+```bash
+docker start memory-cmic-postgres                                            # GM 的 Postgres 容器（宿主端口 5433）
+docker ps --filter name=memory-cmic-postgres --format "{{.Status}}"          # 应为 Up (healthy)
 ```
 
-打开 http://127.0.0.1:5174 （GM Postgres 容器 memory-cmic-postgres 需在运行）。
+### 实际后台启动（当前采用，可复现）
+
+```bash
+# ① BFF（:8002），日志追加到 bff.log
+cd /f/proj_test/ai2026/memory-research/memory-platform/server
+./.venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8002 >> ../bff.log 2>&1 &
+
+# ② 前端（:5174），受管 node 跑 vite.js，日志追加到 vite.log
+cd /f/proj_test/ai2026/memory-research/memory-platform/frontend
+"C:/Users/Administrator/.workbuddy/binaries/node/versions/22.22.2-6/node.exe" node_modules/vite/bin/vite.js >> ../vite.log 2>&1 &
+```
+
+### 验证
+
+```bash
+sleep 5
+curl -s http://127.0.0.1:8002/api/health                                       # {"status":"ok","db":"connected"...}
+curl -s -o /dev/null -w "frontend HTTP %{http_code}\n" http://127.0.0.1:5174/   # 200
+```
+
+打开 <http://127.0.0.1:5174> 查看三页（概览 / 纳入明细 / 记忆清单）。
+
+### 关闭
+
+- 前台：`Ctrl + C`。
+- 后台（PowerShell）：`netstat -ano | findstr :8002`（或 `:5174`）取 PID，再 `taskkill /PID <PID> /F`。
+
+### 前台/开发模式（等价）
+
+```bash
+# BFF
+cd memory-platform/server && .venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8002
+# 前端
+cd memory-platform/frontend && npm run dev
+```
 
 ## BFF 端点
 
@@ -59,6 +92,7 @@ node node_modules/vite/bin/vite.js
 
 ## 说明
 
-- 数据库连接串从环境变量 `OPS_DATABASE_URL` 读取，默认取 GM .env 中的本地开发库（只读使用）。
+- 数据库连接串从环境变量 `OPS_DATABASE_URL` 读取；**未设置时回落到 `main.py` 内置的本地开发库默认值** `postgresql://memory_cmic:...@127.0.0.1:5433/memory_cmic`（只读使用）。因此本地跑无需额外配 .env，只要 Postgres 容器在 5433 即可。
+  - 连接串主机必须用 `127.0.0.1` 而非 `localhost`：Windows 上 `localhost` 先解析 IPv6(::1)，连不上 Docker 映射端口，每次建连要空等约 5s 超时才回落 IPv4。
 - 纳入明细的"产出"= 证据链产出过的记忆条目数；"现存"= 其中仍为 active 的条目。
 - 管理平台（配置平面）已按 2026-10-10 用户决策后置为项目任务5，相关设计稿见本目录。
