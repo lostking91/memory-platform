@@ -1,0 +1,53 @@
+# ============ Python（只读 BFF） ============
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# 虚拟环境
+venv/
+.venv/
+env/
+ENV/
+
+# ============ 密钥与环境变量 ============
+# 可选：OPS_DATABASE_URL 覆盖默认连接串，含库密码，禁止提交
+.env
+.env.local
+.env.*.local
+
+# ============ 日志 ============
+*.log
+logs/
+bff.log
+vite.log
+
+# ============ Node / 前端 ============
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ============ 截图 / CDP 验证临时产物 ============
+# Edge 无头截图用的 user-data-dir，体积大且无提交价值
+.edge-*/
+design-demos/.edge-*/
+
+# ============ 编辑器 / 系统 ============
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
