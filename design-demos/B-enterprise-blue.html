@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>统一记忆管理平台 · 企业蓝原型（方向B）</title>
+<style>
+:root{
+  --blue:#1664ff; --blue-deep:#0e4fd8; --blue-hov:#3d82ff;
+  --blue-bg:#eaf1ff; --blue-bd:#c6d9ff;
+  --bd:#d9dee8; --card-bd:#e3e8f0; --line:#eef1f6;
+  --bg:#f5f7fa; --thead:#f2f5fa;
+  --t1:#1f2733; --t2:#5a6472; --t3:#8a94a3;
+  --ok:#15803d; --ok-bg:#e8f7ee; --ok-bd:#bfe6cd;
+  --wn:#d97706; --wn-bg:#fef3e6; --wn-bd:#f5d9b0;
+  --er:#dc2626; --er-bg:#fdecec; --er-bd:#f3c1c3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-size:14px;line-height:1.6;color:var(--t1);background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit}
+input,textarea,select{font-family:inherit}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:flex;flex-direction:column;height:100vh;min-width:1180px}
+/* ---------- 顶栏 ---------- */
+.top{height:52px;flex:none;background:#fff;border-bottom:1px solid var(--card-bd);display:flex;align-items:center;gap:12px;padding:0 20px}
+.logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#3d82ff,#0e4fd8);display:flex;align-items:center;justify-content:center;color:#fff;flex:none;box-shadow:0 2px 6px rgba(22,100,255,.3)}
+.logo svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.top .pname{font-size:15px;font-weight:700;letter-spacing:.2px}
+.top .pdiv{width:1px;height:18px;background:var(--card-bd)}
+.top .psub{font-size:12px;color:var(--t3)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.envchip{font-size:12px;color:var(--t2);background:var(--thead);border:1px solid var(--card-bd);border-radius:4px;padding:1px 8px;display:inline-flex;align-items:center;gap:6px}
+.envchip .dot{width:6px;height:6px;border-radius:50%;background:#22c55e}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5a9bff,#0e4fd8);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.uname{font-size:13px;color:var(--t2)}
+/* ---------- 主体 ---------- */
+.body{flex:1;display:flex;min-height:0}
+aside{width:196px;flex:none;background:#fff;border-right:1px solid var(--card-bd);padding:10px 0;overflow:auto}
+.navlb{font-size:12px;color:var(--t3);padding:10px 20px 4px}
+.nav a{display:flex;align-items:center;gap:9px;padding:8px 14px 8px 17px;margin:2px 8px;border-radius:6px;font-size:13px;color:var(--t2);cursor:pointer;position:relative;text-decoration:none}
+.nav a:hover{background:#f2f5fa;color:var(--t1)}
+.nav a.on{background:var(--blue-bg);color:var(--blue-deep);font-weight:600}
+.nav a.on::before{content:'';position:absolute;left:-8px;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--blue)}
+.main{flex:1;min-width:0;overflow:auto;padding:16px 24px 48px}
+/* ---------- 内容头 ---------- */
+.chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.chead h1{font-size:18px;font-weight:700}
+.chead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+/* ---------- 按钮 ---------- */
+.btn{height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--bd);background:#fff;color:#333d4d;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.btn.primary:hover{background:var(--blue-deep);border-color:var(--blue-deep);color:#fff}
+.btn.primary:disabled{opacity:.75;cursor:default}
+.btn.sm{height:28px;padding:0 10px;font-size:12px;border-radius:5px}
+.btn.warn{color:var(--er);border-color:var(--er-bd)}
+.btn.warn:hover{background:var(--er-bg);border-color:var(--er);color:var(--er)}
+.ibtn{width:28px;height:28px;border-radius:6px;border:1px solid transparent;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;transition:.15s;flex:none}
+.ibtn:hover{background:var(--blue-bg);color:var(--blue)}
+.ibtn.danger:hover{background:var(--er-bg);color:var(--er)}
+.ibtn.bd{border-color:var(--bd);background:#fff}
+.ibtn.bd:hover{border-color:var(--blue)}
+.lk{color:var(--blue);cursor:pointer;font-size:13px}
+.lk:hover{text-decoration:underline;color:var(--blue-deep)}
+/* ---------- Tab 胶囊 ---------- */
+.ptabs{display:flex;gap:8px;margin-bottom:14px}
+.ptab{height:30px;padding:0 18px;border-radius:999px;background:#e9edf3;border:1px solid transparent;color:var(--t2);font-size:13px;cursor:pointer;transition:.15s}
+.ptab:hover{color:var(--blue)}
+.ptab.on{background:var(--blue);color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(22,100,255,.28)}
+.panel{display:none}
+.panel.on{display:block}
+.card{background:#fff;border:1px solid var(--card-bd);border-radius:8px}
+/* ---------- 规则组 ---------- */
+.rgroup{margin-bottom:12px}
+.rg-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none}
+.rg-head .caret{transition:transform .2s;color:var(--t3)}
+.rgroup.closed .rg-head .caret{transform:rotate(-90deg)}
+.rg-ico{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;flex:none}
+.rg-ico svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.g1{background:linear-gradient(135deg,#3d82ff,#0e4fd8)}
+.g2{background:linear-gradient(135deg,#12b0d8,#0a7fa8)}
+.g3{background:linear-gradient(135deg,#6a72e8,#4048c0)}
+.rg-tt{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.cnt{background:var(--thead);color:var(--t2);border:1px solid var(--card-bd);border-radius:999px;padding:0 8px;font-size:12px;font-weight:400;line-height:18px}
+.rg-desc{font-size:12px;color:var(--t3);margin-top:1px}
+.rg-tools{margin-left:auto;display:flex;gap:8px;align-items:center}
+.searchbox{position:relative}
+.searchbox svg{position:absolute;left:9px;top:8px;color:var(--t3)}
+.searchbox input{height:30px;width:190px;border:1px solid var(--bd);border-radius:6px;padding:0 10px 0 29px;font-size:12px;color:var(--t1);background:#fff}
+.searchbox input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(22,100,255,.12)}
+.rg-body{padding:2px 16px 14px 68px;border-top:1px solid var(--line);position:relative}
+.rg-body::before{content:'';position:absolute;left:35px;top:0;bottom:14px;width:1px;background:var(--card-bd)}
+.rgroup.closed .rg-body{display:none}
+.rule-row{display:flex;align-items:center;gap:12px;border:1px solid var(--card-bd);border-radius:6px;padding:10px 12px;background:#fff;margin-top:10px;transition:.15s}
+.rule-row:hover{border-color:var(--blue-bd);box-shadow:0 2px 8px rgba(22,100,255,.08)}
+.rule-ico{width:32px;height:32px;border-radius:6px;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center;flex:none}
+.rule-name{font-size:13px;font-weight:600}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;align-items:center}
+.tag{font-size:12px;line-height:18px;color:var(--t2);background:var(--thead);border:1px solid var(--card-bd);border-radius:4px;padding:0 8px;display:inline-flex;gap:5px;align-items:center}
+.tag.blue{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)}
+.tag.blue .dot{width:6px;height:6px;border-radius:50%;background:var(--blue)}
+.tag.pro{color:#fff;background:linear-gradient(135deg,#3d82ff,#0e4fd8);border:none;font-weight:600}
+.rule-ops{margin-left:auto;display:flex;gap:4px}
+.empty-mini{color:var(--t3);font-size:12px;padding:14px 4px;border:1px dashed var(--bd);border-radius:6px;margin-top:10px;text-align:center;background:#fafbfc}
+/* ---------- 统计卡 ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.stat{background:#f7f9fc;border:1px solid var(--card-bd);border-radius:8px;padding:14px 16px;position:relative}
+.stat .lb{font-size:13px;color:var(--t2)}
+.stat .vl{font-size:26px;font-weight:700;margin-top:2px;color:var(--t1)}
+.stat .ic{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:8px;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center}
+/* ---------- 表格 ---------- */
+.tblwrap{overflow:auto}
+table.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--thead);text-align:left;font-size:13px;color:var(--t2);font-weight:600;padding:9px 12px;border-bottom:1px solid var(--card-bd);white-space:nowrap}
+.tbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line);color:var(--t1);white-space:nowrap}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover{background:#f5f8ff}
+.tbl tbody tr:last-child td{border-bottom:none}
+.mono{font-family:Consolas,"SF Mono",Menlo,monospace;font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:4px;font-size:12px;border:1px solid;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%;flex:none}
+.chip.ok{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-bd)} .chip.ok .dot{background:var(--ok)}
+.chip.warn{color:var(--wn);background:var(--wn-bg);border-color:var(--wn-bd)} .chip.warn .dot{background:var(--wn)}
+.chip.run{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)} .chip.run .dot{background:var(--blue);animation:pulse 1.2s infinite}
+.chip.err{color:var(--er);background:var(--er-bg);border-color:var(--er-bd)} .chip.err .dot{background:var(--er)}
+.chip.gray{color:var(--t2);background:var(--thead);border-color:var(--card-bd)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+/* ---------- 检索 ---------- */
+.sgrid{display:flex;gap:12px;align-items:flex-start}
+.spanel{width:300px;flex:none;padding:16px}
+.spanel h3{font-size:15px;font-weight:700}
+.spanel .sub{font-size:12px;color:var(--t3);margin:2px 0 6px}
+.fl{font-size:13px;color:#333d4d;font-weight:600;margin:14px 0 6px;display:flex;gap:4px;align-items:center}
+.fl .req{color:var(--er)}
+.fl .tip{color:var(--t3);font-weight:400;display:inline-flex}
+.inp{width:100%;height:34px;border:1px solid var(--bd);border-radius:6px;padding:0 10px;font-size:13px;color:var(--t1);background:#fff;transition:.15s}
+.inp:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(22,100,255,.12)}
+textarea.inp{height:auto;min-height:96px;padding:8px 10px;resize:vertical;line-height:1.6}
+.inp.err{border-color:var(--er);box-shadow:0 0 0 2px rgba(229,72,77,.12)}
+.cntwrap{position:relative}
+.incnt{position:absolute;right:10px;top:7px;font-size:12px;color:var(--t3)}
+.tacnt{text-align:right;font-size:12px;color:var(--t3);margin-top:4px}
+.dd{position:relative;margin-bottom:2px}
+.dd-box{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1px solid var(--bd);border-radius:6px;height:34px;padding:0 10px;font-size:13px;cursor:pointer;background:#fff;color:var(--t1)}
+.dd-box:hover{border-color:var(--blue)}
+.dd-box .caret{color:var(--t3);transition:transform .15s}
+.dd.open .dd-box .caret{transform:rotate(180deg)}
+.dd-list{position:absolute;left:0;right:0;top:38px;background:#fff;border:1px solid var(--card-bd);border-radius:6px;box-shadow:0 6px 16px rgba(15,23,42,.12);z-index:20;display:none;overflow:hidden}
+.dd.open .dd-list{display:block}
+.dd-opt{padding:7px 10px;font-size:13px;cursor:pointer;color:#333d4d}
+.dd-opt:hover{background:#f5f8ff}
+.dd-opt.sel{background:var(--blue-bg);color:var(--blue-deep);font-weight:600}
+.slider-row{display:flex;align-items:center;gap:10px}
+.slider-row input[type=range]{flex:1;accent-color:var(--blue);height:20px}
+.slider-row .num{width:62px;height:30px;flex:none}
+.swrow{display:flex;align-items:center;gap:10px;margin:12px 0}
+.sw{width:36px;height:20px;border-radius:999px;background:#cfd6e0;position:relative;cursor:pointer;transition:.2s;flex:none;border:none}
+.sw::after{content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw.on{background:var(--blue)}
+.sw.on::after{left:18px}
+.swnote{font-size:12px;color:var(--t3)}
+.seg{display:inline-flex;background:#eef1f6;border-radius:6px;padding:3px;gap:3px}
+.seg button{border:none;background:transparent;height:28px;padding:0 14px;border-radius:4px;font-size:13px;color:var(--t2);cursor:pointer;transition:.15s}
+.seg button:hover{color:var(--blue)}
+.seg button.sel{background:var(--blue);color:#fff;font-weight:600}
+.sres{flex:1;min-width:0}
+.sres-head{display:flex;align-items:center;gap:8px;padding:9px 14px;background:#f7f9fc;border-bottom:1px solid var(--card-bd);border-radius:8px 8px 0 0}
+.sres-head .tt{font-size:14px;font-weight:600}
+.sres-head .rid{margin-left:auto;font-size:12px;color:var(--t3)}
+.sres-head .rid b{color:var(--t2);font-weight:600;font-family:Consolas,Menlo,monospace}
+.sres-body{padding:14px;min-height:460px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--t3);padding-top:150px;font-size:13px}
+.empty .ebox{width:52px;height:52px;border-radius:10px;background:var(--thead);border:1px solid var(--card-bd);display:flex;align-items:center;justify-content:center;color:#b6bfcc}
+.empty .ebox svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.rescard{border:1px solid var(--card-bd);border-radius:8px;padding:12px 14px;margin-bottom:10px;background:#fff;transition:.15s}
+.rescard:hover{border-color:var(--blue-bd);box-shadow:0 2px 10px rgba(22,100,255,.1)}
+.rescard .hd{display:flex;align-items:center;gap:8px}
+.rescard .score{margin-left:auto;font-size:13px;font-weight:700;color:var(--blue-deep);display:flex;align-items:center;gap:8px}
+.bar{width:70px;height:5px;border-radius:3px;background:#e9edf3;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#3d82ff,#0e4fd8)}
+.rescard .ct{font-size:14px;margin:8px 0 6px;color:var(--t1)}
+.rescard .ft{font-size:12px;color:var(--t3);display:flex;gap:14px}
+.spin{width:14px;height:14px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;flex:none}
+.spin.dark{border-color:rgba(22,100,255,.25);border-top-color:var(--blue)}
+@keyframes rot{to{transform:rotate(360deg)}}
+.loadingbox{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--t2);font-size:13px;padding-top:180px}
+/* ---------- 抽屉 ---------- */
+.mask{position:fixed;inset:0;background:rgba(15,23,42,.45);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+.mask.on{opacity:1;pointer-events:auto}
+.dw{position:fixed;top:0;right:0;bottom:0;background:#fff;z-index:50;box-shadow:-8px 0 24px rgba(15,23,42,.14);transform:translateX(102%);transition:transform .28s ease;display:flex;flex-direction:column;max-width:94vw}
+.dw.on{transform:none}
+#dwFact{width:560px} #dwPortrait{width:780px} #dwTask{width:640px}
+.dw-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--card-bd);font-size:15px;font-weight:700;flex:none}
+.dw-head .ibtn{margin-left:auto}
+.dw-body{flex:1;overflow:auto;padding:18px 22px}
+.dw-foot{border-top:1px solid var(--card-bd);padding:12px 20px;display:flex;justify-content:flex-end;gap:10px;flex:none;background:#fafbfc}
+.info-banner{display:flex;gap:8px;align-items:flex-start;background:var(--blue-bg);border:1px solid var(--blue-bd);color:var(--blue-deep);border-radius:6px;padding:10px 12px;font-size:13px;margin-bottom:4px}
+.info-banner svg{margin-top:2px}
+/* radio 卡 */
+.rcards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rcard{border:1px solid var(--bd);border-radius:8px;padding:12px;cursor:pointer;background:#fff;transition:.15s}
+.rcard:hover{border-color:var(--blue-hov)}
+.rcard.sel{border-color:var(--blue);background:#f5f9ff;box-shadow:0 0 0 1px var(--blue)}
+.rchead{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.rchead .ric{color:var(--t2);display:inline-flex}
+.rcard.sel .rchead .ric{color:var(--blue)}
+.radio{margin-left:auto;width:16px;height:16px;border-radius:50%;border:1px solid #c3ccd8;background:#fff;flex:none;transition:.15s}
+.rcard.sel .radio{border-color:var(--blue);background:var(--blue);box-shadow:inset 0 0 0 3px #fff}
+.rcdesc{font-size:12px;color:var(--t3);margin-top:6px}
+.bdg{font-size:11px;line-height:16px;color:var(--wn);background:var(--wn-bg);border:1px solid var(--wn-bd);border-radius:4px;padding:0 5px;flex:none}
+.flrow{display:flex;align-items:center}
+.flrow .lk{margin-left:auto;font-size:13px}
+/* ---------- 治理 ---------- */
+.gov-head{display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.gov-head .tt{font-size:14px;font-weight:700}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 16px}
+.field{border:1px solid var(--card-bd);border-radius:6px;padding:8px 10px;background:#f7f9fc}
+.field .k{font-size:12px;color:var(--t3);font-family:Consolas,Menlo,monospace}
+.field .inp{height:30px;margin-top:4px;background:#fff}
+.field .ro{margin-top:4px;font-size:14px;font-weight:700;color:var(--blue-deep);font-family:Consolas,Menlo,monospace}
+.gov-foot{padding:12px 16px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:10px;align-items:center}
+.gov-foot .note{margin-right:auto;font-size:12px;color:var(--t3)}
+.errline{color:var(--er);font-size:12px;margin-top:6px;display:flex;gap:6px;align-items:center}
+/* 任务详情 */
+.ov{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ov .cell{background:#f7f9fc;border:1px solid var(--card-bd);border-radius:6px;padding:8px 12px;font-size:13px}
+.ov .cell .k{color:var(--t3);font-size:12px}
+.sect{font-size:13px;font-weight:700;margin:18px 0 4px;display:flex;align-items:center;gap:8px}
+.op{border:1px solid var(--card-bd);border-radius:8px;padding:12px 14px;margin-top:10px;background:#fff}
+.op:hover{border-color:var(--blue-bd)}
+.ophead{display:flex;gap:8px;align-items:center;font-size:13px;font-weight:600}
+.kbd{font-size:11px;line-height:18px;border-radius:4px;padding:0 7px;border:1px solid;font-weight:600;flex:none}
+.kbd.merge{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)}
+.kbd.inference{color:#0a7fa8;background:#e6f7fb;border-color:#b5e3ee}
+.kbd.invalidation{color:var(--wn);background:var(--wn-bg);border-color:var(--wn-bd)}
+.opmem{font-family:Consolas,Menlo,monospace;font-size:12px;color:var(--t2);background:var(--thead);border:1px solid var(--card-bd);border-radius:4px;padding:0 6px;line-height:18px}
+.opdesc{font-size:13px;color:#333d4d;margin-top:7px}
+.opfoot{margin-top:9px;display:flex;justify-content:space-between;align-items:center}
+.opfoot .oid{font-size:12px;color:var(--t3);font-family:Consolas,Menlo,monospace}
+/* ---------- dialog / toast / mock ---------- */
+.dlg{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.96);width:430px;background:#fff;border-radius:10px;z-index:60;box-shadow:0 12px 40px rgba(15,23,42,.22);opacity:0;pointer-events:none;transition:.18s}
+.dlg.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.dlg-head{padding:14px 18px;font-size:15px;font-weight:700;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.dlg-head .wic{width:20px;height:20px;border-radius:50%;background:var(--er-bg);color:var(--er);display:flex;align-items:center;justify-content:center;flex:none}
+.dlg-body{padding:16px 18px;font-size:13px;color:var(--t2)}
+.dlg-body .inp{margin-top:10px}
+.dlg-foot{padding:12px 18px;display:flex;justify-content:flex-end;gap:10px;border-top:1px solid var(--line)}
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-10px);background:#fff;border:1px solid var(--card-bd);border-left:3px solid var(--blue);box-shadow:0 6px 20px rgba(15,23,42,.14);border-radius:6px;padding:9px 16px;font-size:13px;color:var(--t1);z-index:80;opacity:0;pointer-events:none;transition:.25s;display:flex;gap:8px;align-items:center;max-width:70vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast svg{color:var(--blue)}
+.mock{position:fixed;right:12px;bottom:12px;font-size:11px;color:var(--t3);background:#fff;border:1px solid var(--card-bd);border-radius:4px;padding:2px 8px;z-index:30;letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 顶栏 -->
+  <header class="top">
+    <div class="logo"><svg viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg></div>
+    <span class="pname">广州移动联创中心 · 统一记忆管理平台</span>
+    <span class="pdiv"></span>
+    <span class="psub">GeneralMemory-2.1.0（MemoryCMIC）</span>
+    <div class="right">
+      <span class="envchip"><span class="dot"></span>生产租户</span>
+      <span class="uname">记忆运营管理员</span>
+      <span class="avatar">运</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <!-- 左栏 -->
+    <aside>
+      <div class="navlb">记忆服务</div>
+      <nav class="nav">
+        <a class="on"><svg class="i" viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg>记忆库</a>
+        <a data-nav="记忆溯源"><svg class="i" viewBox="0 0 16 16"><circle cx="4" cy="4" r="1.8"/><circle cx="4" cy="12" r="1.8"/><circle cx="12" cy="8" r="1.8"/><path d="M4 5.8v4.4M5.6 4.9l4.8 2.3M5.6 11.1l4.8-2.3"/></svg>记忆溯源</a>
+        <a data-nav="记忆审计"><svg class="i" viewBox="0 0 16 16"><path d="M8 2l5 2v4c0 3-2 5-5 6-3-1-5-3-5-6V4z"/><path d="M6 8l1.5 1.5L10.5 6.5"/></svg>记忆审计</a>
+      </nav>
+      <div class="navlb">运营</div>
+      <nav class="nav">
+        <a data-nav="服务渠道"><svg class="i" viewBox="0 0 16 16"><path d="M6.5 9.5l3-3"/><path d="M5 8L3.5 9.5a2.1 2.1 0 0 0 3 3L8 11"/><path d="M11 8l1.5-1.5a2.1 2.1 0 0 0-3-3L8 5"/></svg>服务渠道</a>
+        <a data-nav="用量"><svg class="i" viewBox="0 0 16 16"><path d="M3 13.5h10"/><path d="M5 13.5V9.5M8 13.5V6.5M11 13.5V4.5"/></svg>用量</a>
+      </nav>
+    </aside>
+
+    <!-- 主区 -->
+    <div class="main">
+      <div class="chead">
+        <button class="ibtn bd" id="btnBack" title="返回"><svg class="i" viewBox="0 0 16 16"><path d="M10 3L5 8l5 5"/></svg></button>
+        <h1>记忆详情：默认记忆库</h1>
+        <button class="ibtn" id="btnCopy" title="复制记忆库 ID"><svg class="i" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-1a1.5 1.5 0 0 0-1.5-1.5H4a1.5 1.5 0 0 0-1.5 1.5V9A1.5 1.5 0 0 0 4 10.5h1.5"/></svg></button>
+        <div class="right">
+          <button class="btn" id="btnEdit"><svg class="i" viewBox="0 0 16 16"><path d="M4 12h2l7-7-2-2-7 7z"/><path d="M9.5 4.5l2 2"/></svg>编辑</button>
+          <button class="btn primary" id="btnWrite"><svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>写入记忆数据</button>
+        </div>
+      </div>
+
+      <div class="ptabs">
+        <button class="ptab on" data-tab="rules">记忆规则</button>
+        <button class="ptab" data-tab="detail">记忆详情</button>
+        <button class="ptab" data-tab="search">记忆检索</button>
+        <button class="ptab" data-tab="gov">记忆治理</button>
+      </div>
+
+      <!-- ============ Tab1 记忆规则 ============ -->
+      <section class="panel on" id="panel-rules">
+
+        <div class="card rgroup" id="grp-fact">
+          <div class="rg-head">
+            <svg class="i caret" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+            <div class="rg-ico g1"><svg viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg></div>
+            <div>
+              <div class="rg-tt">事实记忆规则<span class="cnt" data-gcnt>1</span></div>
+              <div class="rg-desc">捕捉对话中明确或隐含的事实信息</div>
+            </div>
+            <div class="rg-tools">
+              <button class="btn sm" data-toast="原型未实现：新建事实记忆规则"><svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>事实记忆规则</button>
+              <span class="searchbox"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg><input placeholder="请输入名称"></span>
+            </div>
+          </div>
+          <div class="rg-body">
+            <div class="rule-row">
+              <div class="rule-ico"><svg class="i" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg></div>
+              <div>
+                <div class="rule-name">默认记忆片段规则</div>
+                <div class="tags">
+                  <span class="tag blue"><span class="dot"></span>自动更新:开</span>
+                  <span class="tag">默认抽取指令</span>
+                  <span class="tag">180天</span>
+                  <span class="tag pro">Pro</span>
+                </div>
+              </div>
+              <div class="rule-ops">
+                <button class="ibtn" data-drawer="fact" title="编辑"><svg class="i" viewBox="0 0 16 16"><path d="M4 12h2l7-7-2-2-7 7z"/><path d="M9.5 4.5l2 2"/></svg></button>
+                <button class="ibtn danger del-rule" data-name="默认记忆片段规则" title="删除"><svg class="i" viewBox="0 0 16 16"><path d="M3 4.5h10"/><path d="M6.5 4.5v-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1"/><path d="M5 4.5l.4 8a1 1 0 0 0 1 .9h3.2a1 1 0 0 0 1-.9l.4-8"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card rgroup closed" id="grp-portrait">
+          <div class="rg-head">
+            <svg class="i caret" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+            <div class="rg-ico g2"><svg viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.5"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></div>
+            <div>
+              <div class="rg-tt">用户画像规则<span class="cnt" data-gcnt>1</span></div>
+              <div class="rg-desc">捕捉用户稳定的偏好与属性</div>
+            </div>
+            <div class="rg-tools">
+              <button class="btn sm" data-toast="原型未实现：新建用户画像规则"><svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>用户画像规则</button>
+              <span class="searchbox"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg><input placeholder="请输入名称"></span>
+            </div>
+          </div>
+          <div class="rg-body">
+            <div class="rule-row">
+              <div class="rule-ico"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.5"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></div>
+              <div>
+                <div class="rule-name">默认画像</div>
+                <div class="tags">
+                  <span class="tag blue"><span class="dot"></span>自动更新:开</span>
+                  <span class="tag">12 个画像字段</span>
+                  <span class="tag">180天</span>
+                  <span class="tag pro">Pro</span>
+                </div>
+              </div>
+              <div class="rule-ops">
+                <button class="ibtn" data-drawer="portrait" title="编辑"><svg class="i" viewBox="0 0 16 16"><path d="M4 12h2l7-7-2-2-7 7z"/><path d="M9.5 4.5l2 2"/></svg></button>
+                <button class="ibtn danger del-rule" data-name="默认画像" title="删除"><svg class="i" viewBox="0 0 16 16"><path d="M3 4.5h10"/><path d="M6.5 4.5v-1a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1"/><path d="M5 4.5l.4 8a1 1 0 0 0 1 .9h3.2a1 1 0 0 0 1-.9l.4-8"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card rgroup closed" id="grp-skill">
+          <div class="rg-head">
+            <svg class="i caret" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>
+            <div class="rg-ico g3"><svg viewBox="0 0 16 16"><path d="M2.5 5.5l5.5-3 5.5 3v5l-5.5 3-5.5-3z"/><path d="M2.5 5.5l5.5 3 5.5-3M8 8.5v5"/></svg></div>
+            <div>
+              <div class="rg-tt">技能记忆规则<span class="cnt" data-gcnt>0</span></div>
+              <div class="rg-desc">从交互中沉淀可复用的技能与流程</div>
+            </div>
+            <div class="rg-tools">
+              <button class="btn sm" data-toast="原型未实现：新建技能记忆规则"><svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>技能记忆规则</button>
+              <span class="searchbox"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg><input placeholder="请输入名称"></span>
+            </div>
+          </div>
+          <div class="rg-body">
+            <div class="empty-mini">该规则组暂无规则</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Tab2 记忆详情 ============ -->
+      <section class="panel" id="panel-detail">
+        <div class="stats">
+          <div class="stat"><div class="lb">事实记忆数</div><div class="vl">6</div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg></span></div>
+          <div class="stat"><div class="lb">用户画像数</div><div class="vl">1</div><span class="ic"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.5"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></span></div>
+          <div class="stat"><div class="lb">技能记忆数</div><div class="vl">1</div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M2.5 5.5l5.5-3 5.5 3v5l-5.5 3-5.5-3z"/><path d="M2.5 5.5l5.5 3 5.5-3M8 8.5v5"/></svg></span></div>
+          <div class="stat"><div class="lb">记忆实体数</div><div class="vl">1</div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M8 2.5l5.5 3-5.5 3-5.5-3z"/><path d="M2.5 8.5l5.5 3 5.5-3"/><path d="M2.5 11l5.5 3 5.5-3"/></svg></span></div>
+        </div>
+        <div class="searchbox" style="margin-bottom:12px">
+          <svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg>
+          <input placeholder="请输入实体 ID，支持模糊搜索" style="width:280px;height:32px">
+        </div>
+        <div class="card tblwrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>记忆实体类型 <svg class="i" style="width:12px;height:12px;vertical-align:-2px;color:#8a94a3" viewBox="0 0 16 16"><path d="M2.5 3.5h11l-4 5v4l-3 1v-5z"/></svg></th>
+              <th>实体ID</th><th>更新时间</th><th>事实记忆数</th><th>用户画像数</th><th>技能记忆数</th><th>操作</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="chip gray">user</span></td>
+                <td><span class="mono">laowang-001</span>（老王）</td>
+                <td>2026-10-09 15:36</td>
+                <td>6</td><td>1</td><td>1</td>
+                <td><span class="lk" data-toast="原型未实现：实体记忆明细">查看</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ============ Tab3 记忆检索 ============ -->
+      <section class="panel" id="panel-search">
+        <div class="sgrid">
+          <div class="card spanel">
+            <h3>记忆检索配置调试</h3>
+            <div class="sub">支持"事实记忆"与"技能记忆"并行检索</div>
+
+            <div class="fl">记忆类型</div>
+            <div class="dd" id="ddType">
+              <div class="dd-box"><span class="dd-val">事实记忆</span><svg class="i caret" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+              <div class="dd-list">
+                <div class="dd-opt sel" data-v="事实记忆">事实记忆</div>
+                <div class="dd-opt" data-v="技能记忆">技能记忆</div>
+              </div>
+            </div>
+
+            <div class="fl">事实记忆规则</div>
+            <div class="dd" id="ddRule">
+              <div class="dd-box"><span class="dd-val">默认记忆片段规则</span><svg class="i caret" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></div>
+              <div class="dd-list">
+                <div class="dd-opt sel" data-v="默认记忆片段规则">默认记忆片段规则</div>
+              </div>
+            </div>
+
+            <div class="fl">最大召回数量 <span class="tip" title="单次检索最多返回的记忆条数"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7v3.5M8 5.2v.1"/></svg></span></div>
+            <div class="slider-row">
+              <input type="range" id="rcRange" min="1" max="100" value="1">
+              <input type="number" class="inp num" id="rcNum" min="1" max="100" value="1">
+            </div>
+
+            <div class="swrow" style="margin-top:16px"><span style="font-size:13px;font-weight:600">意图识别信息</span><span class="tip" style="color:#8a94a3;display:inline-flex"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7v3.5M8 5.2v.1"/></svg></span><button class="sw" style="margin-left:auto" aria-label="意图识别信息"></button></div>
+            <div class="swrow"><span style="font-size:13px;font-weight:600">改写</span><button class="sw" style="margin-left:auto" aria-label="改写"></button></div>
+            <div class="swrow"><span style="font-size:13px;font-weight:600">排序</span><button class="sw" style="margin-left:auto" aria-label="排序"></button></div>
+
+            <div class="fl">输入 <span class="req">*</span></div>
+            <textarea class="inp" id="qInput" maxlength="1024" placeholder="针对所选记忆类型进行检索调试，编辑对话及记忆，最多可输入1024个字符"></textarea>
+            <div class="tacnt" id="qCnt">0 / 1024</div>
+
+            <button class="btn primary" id="btnSearch" style="width:100%;justify-content:center;margin-top:14px"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg>检索</button>
+          </div>
+
+          <div class="card sres">
+            <div class="sres-head">
+              <svg class="i" style="color:#1664ff" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg>
+              <span class="tt">检索结果</span>
+              <span class="rid">Request ID: <b id="reqId">--</b></span>
+              <button class="ibtn" id="btnRefresh" title="刷新"><svg class="i" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.8-3.8"/><path d="M13 2.5V5h-2.5"/></svg></button>
+            </div>
+            <div class="sres-body" id="resBody">
+              <div class="empty">
+                <span class="ebox"><svg viewBox="0 0 16 16"><path d="M8 2.5l5.5 3-5.5 3-5.5-3z"/><path d="M2.5 8.5l5.5 3 5.5-3"/><path d="M2.5 11l5.5 3 5.5-3"/></svg></span>
+                暂无数据
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ Tab4 记忆治理 ============ -->
+      <section class="panel" id="panel-gov">
+        <div class="card" style="margin-bottom:12px">
+          <div class="gov-head">
+            <span class="tt">治理策略</span>
+            <span class="chip gray">自动整合（记忆合并 / 推断 / 失效）</span>
+            <div class="swrow" style="margin:0"><button class="sw" id="swAutoConsol" aria-label="自动整合"></button><span class="swnote">关闭时仅支持手动触发整合任务</span></div>
+          </div>
+          <div class="fgrid">
+            <div class="field"><div class="k">change_threshold</div><input class="inp" type="number" value="5"></div>
+            <div class="field"><div class="k">idle_minutes</div><input class="inp" type="number" value="10"></div>
+            <div class="field"><div class="k">cooldown_minutes</div><input class="inp" type="number" value="60"></div>
+            <div class="field"><div class="k">max_wait_minutes</div><input class="inp" type="number" value="1440"></div>
+            <div class="field"><div class="k">max_memories</div><input class="inp" type="number" value="200"></div>
+            <div class="field"><div class="k">max_model_calls</div><input class="inp" type="number" value="20"></div>
+            <div class="field"><div class="k">version</div><div class="ro" id="govVersion">1</div></div>
+          </div>
+          <div class="gov-foot">
+            <span class="note">策略修改保存后立即对新建整合任务生效</span>
+            <button class="btn primary" id="btnSavePolicy"><svg class="i" viewBox="0 0 16 16"><path d="M3 3h8l2 2v8H3z"/><path d="M5.5 3v3h5V3M5.5 13v-4h5v4"/></svg>保存策略</button>
+          </div>
+        </div>
+
+        <div class="card tblwrap">
+          <table class="tbl">
+            <thead><tr>
+              <th>任务ID</th><th>用户</th><th>状态</th><th>触发方式</th><th>selected</th><th>processed</th><th>remaining</th><th>model_calls</th><th>创建时间</th><th>操作</th>
+            </tr></thead>
+            <tbody>
+              <tr>
+                <td class="mono">tsk_consol_001</td><td class="mono">laowang-001</td>
+                <td><span class="chip ok"><span class="dot"></span>succeeded</span></td>
+                <td>手动</td><td>6</td><td>6</td><td>0</td><td>3</td><td>2026-10-09 15:40</td>
+                <td><span class="lk view-task" data-task="tsk_consol_001">查看详情</span></td>
+              </tr>
+              <tr>
+                <td class="mono">tsk_consol_002</td><td class="mono">laowang-001</td>
+                <td><span class="chip warn"><span class="dot"></span>partial</span></td>
+                <td>自动（达到变更阈值）</td><td>4</td><td>2</td><td>2</td><td>2</td><td>2026-10-09 15:12</td>
+                <td><span class="lk view-task" data-task="tsk_consol_002">查看详情</span></td>
+              </tr>
+              <tr>
+                <td class="mono">tsk_consol_003</td><td class="mono">laowang-001</td>
+                <td><span class="chip run"><span class="dot"></span>processing</span></td>
+                <td>自动</td><td>4</td><td>1</td><td>3</td><td>1</td><td>2026-10-09 16:02</td>
+                <td><span class="lk view-task" data-task="tsk_consol_003">查看详情</span></td>
+              </tr>
+              <tr>
+                <td class="mono">tsk_consol_004</td><td class="mono">laowang-001</td>
+                <td><span class="chip err" title="error: embedding 服务超时"><span class="dot"></span>failed</span></td>
+                <td>手动</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2026-10-09 14:47</td>
+                <td><span class="lk view-task" data-task="tsk_consol_004">查看详情</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 抽屉：事实规则 ============ -->
+<div class="dw" id="dwFact">
+  <div class="dw-head">编辑事实记忆规则<button class="ibtn" data-close title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dw-body">
+    <div class="info-banner"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7.2v3.3M8 5.4v.1"/></svg><span>说明：编辑规则不会对已产生的记忆数据造成影响。</span></div>
+
+    <div class="fl" style="margin-top:14px">规则名称 <span class="req">*</span></div>
+    <div class="cntwrap"><input class="inp" id="factName" maxlength="32" value="默认记忆片段规则"><span class="incnt" id="factNameCnt">8 / 32</span></div>
+
+    <div class="fl">规则描述</div>
+    <textarea class="inp" id="factDesc" maxlength="128" placeholder="请输入描述"></textarea>
+    <div class="tacnt" id="factDescCnt">0 / 128</div>
+
+    <div class="fl">规则指令 <span class="req">*</span> <span class="tip" title="规则指令决定记忆抽取的行为"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7.2v3.3M8 5.4v.1"/></svg></span></div>
+    <div class="rcards">
+      <div class="rcard sel">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M3 13L13 3M3 3l4 4M9 9l4 4"/></svg></span>默认规则指令<span class="radio"></span></div>
+        <div class="rcdesc">推荐，在多数数据集上最佳效果</div>
+      </div>
+      <div class="rcard">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3"/></svg></span>自定义规则指令<span class="radio"></span></div>
+        <div class="rcdesc">自定义记忆规则指令</div>
+      </div>
+    </div>
+
+    <div class="fl">自动更新</div>
+    <div class="swrow" style="margin-top:0"><button class="sw on" aria-label="自动更新"></button><span class="swnote">开启后，模型会自动更新记忆内容</span></div>
+
+    <div class="fl">记忆过期时间</div>
+    <div class="seg"><button>7天</button><button>30天</button><button class="sel">180天</button><button>永不过期</button></div>
+
+    <div class="fl">记忆抽取模式 <span class="req">*</span></div>
+    <div class="rcards">
+      <div class="rcard sel">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M9 2.5L4 9h3.5L7 13.5 12 7H8.5z"/></svg></span>高效指令执行<span class="radio"></span></div>
+        <div class="rcdesc">指令遵循更强，响应延迟更低，适合常规业务场景</div>
+      </div>
+      <div class="rcard">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><rect x="2.5" y="4" width="11" height="8" rx="1.5"/><path d="M6 12v1.5M10 12v1.5M5.5 7l1.5 1.5L10.5 6"/></svg></span>记忆智能抽取<span class="bdg">推荐</span><span class="radio"></span></div>
+        <div class="rcdesc">记忆主动抽取与智能更新，综合效果好，更适合复杂业务场景</div>
+      </div>
+    </div>
+
+    <div class="fl">记忆抽取版本 <span class="req">*</span> <span class="tip" title="不同版本对应不同模型能力与计费"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7.2v3.3M8 5.4v.1"/></svg></span><span class="lk" style="margin-left:auto;font-weight:400" data-toast="原型未实现：计费详情">计费详情</span></div>
+    <div class="rcards">
+      <div class="rcard sel">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M4 13.5V6l2.5 2L8 4l1.5 4L12 6v7.5z"/></svg></span>Pro<span class="bdg">推荐</span><span class="radio"></span></div>
+        <div class="rcdesc">更强大的大模型进行记忆抽取与检索重排，面向对记忆准确率要求高的企业级场景</div>
+      </div>
+      <div class="rcard">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M3 10.5l3.5-3 2.5 2 4-4"/><path d="M10 5.5h3v3"/></svg></span>Lite<span class="radio"></span></div>
+        <div class="rcdesc">轻量模型记忆抽取与向量检索，适合大规模、成本敏感的应用</div>
+      </div>
+    </div>
+
+    <div class="fl">多模态</div>
+    <div class="swrow" style="margin-top:0"><button class="sw" aria-label="多模态"></button><span class="swnote">开启后，支持多模态内容的记忆抽取</span></div>
+  </div>
+  <div class="dw-foot"><button class="btn" data-close>取消</button><button class="btn primary" data-save>确认</button></div>
+</div>
+
+<!-- ============ 抽屉：画像规则 ============ -->
+<div class="dw" id="dwPortrait">
+  <div class="dw-head">编辑用户画像规则<button class="ibtn" data-close title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dw-body">
+    <div class="fl" style="margin-top:0">画像规则名称 <span class="req">*</span></div>
+    <div class="cntwrap"><input class="inp" id="pName" maxlength="32" value="默认画像"><span class="incnt" id="pNameCnt">4 / 32</span></div>
+
+    <div class="fl">规则描述</div>
+    <textarea class="inp" id="pDesc" maxlength="128">系统自动创建的默认画像模板</textarea>
+    <div class="tacnt" id="pDescCnt">13 / 128</div>
+
+    <div class="fl">记忆抽取模式 <span class="req">*</span></div>
+    <div class="rcards">
+      <div class="rcard sel">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M9 2.5L4 9h3.5L7 13.5 12 7H8.5z"/></svg></span>高效指令执行<span class="radio"></span></div>
+        <div class="rcdesc">指令遵循更强，响应延迟更低，适合常规业务场景</div>
+      </div>
+      <div class="rcard">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><rect x="2.5" y="4" width="11" height="8" rx="1.5"/><path d="M6 12v1.5M10 12v1.5M5.5 7l1.5 1.5L10.5 6"/></svg></span>记忆智能抽取<span class="bdg">推荐</span><span class="radio"></span></div>
+        <div class="rcdesc">记忆主动抽取与智能更新，综合效果好，更适合复杂业务场景</div>
+      </div>
+    </div>
+
+    <div class="fl">记忆抽取版本 <span class="req">*</span> <span class="tip" title="不同版本对应不同模型能力与计费"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 7.2v3.3M8 5.4v.1"/></svg></span><span class="lk" style="margin-left:auto;font-weight:400" data-toast="原型未实现：计费详情">计费详情</span></div>
+    <div class="rcards">
+      <div class="rcard sel">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M4 13.5V6l2.5 2L8 4l1.5 4L12 6v7.5z"/></svg></span>Pro<span class="bdg">推荐</span><span class="radio"></span></div>
+        <div class="rcdesc">更强大的大模型进行记忆抽取与检索重排，面向对记忆准确率要求高的企业级场景</div>
+      </div>
+      <div class="rcard">
+        <div class="rchead"><span class="ric"><svg class="i" viewBox="0 0 16 16"><path d="M3 10.5l3.5-3 2.5 2 4-4"/><path d="M10 5.5h3v3"/></svg></span>Lite<span class="radio"></span></div>
+        <div class="rcdesc">轻量模型记忆抽取与向量检索，适合大规模、成本敏感的应用</div>
+      </div>
+    </div>
+
+    <div class="fl" style="margin-top:18px">画像字段列表<span class="lk" style="margin-left:auto;font-weight:400" data-toast="原型未实现：添加用户画像字段">添加用户画像字段（12/50）</span></div>
+    <div class="tblwrap" style="border:1px solid var(--card-bd);border-radius:6px">
+      <table class="tbl">
+        <thead><tr><th style="width:180px">用户画像字段名称</th><th>描述</th><th style="width:80px">初始值</th><th style="width:100px">操作</th></tr></thead>
+        <tbody>
+          <tr><td>内容偏好</td><td>用户喜欢阅读或观看的内容类型（如新…</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="内容偏好">删除</span></td></tr>
+          <tr><td>社会关系（朋友圈）</td><td>用户的朋友圈构成、社交习惯或重要社…</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="社会关系（朋友圈）">删除</span></td></tr>
+          <tr><td>民族</td><td>用户的民族或种族背景</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="民族">删除</span></td></tr>
+          <tr><td>居住地</td><td>用户目前居住的城市、地区或国家</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="居住地">删除</span></td></tr>
+          <tr><td>年龄</td><td>用户的年龄</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="年龄">删除</span></td></tr>
+          <tr><td>饮食习惯</td><td>用户是否有特定饮食偏好或限制（如素…</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="饮食习惯">删除</span></td></tr>
+          <tr><td>人生理想/目标</td><td>用户的长远目标、梦想或人生规划</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="人生理想/目标">删除</span></td></tr>
+          <tr><td>性别</td><td>用户的性别认同或自我表达</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="性别">删除</span></td></tr>
+          <tr><td>年龄段</td><td>用户当前所处的年龄阶段（如小学生、…</td><td>-</td><td><span class="lk" data-toast="原型未实现：编辑画像字段">编辑</span>&ensp;<span class="lk danger del-field" data-name="年龄段">删除</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="dw-foot"><button class="btn" data-close>取消</button><button class="btn primary" data-save>确认</button></div>
+</div>
+
+<!-- ============ 抽屉：整合任务详情 ============ -->
+<div class="dw" id="dwTask">
+  <div class="dw-head">整合任务详情<span class="mono" id="taskTitleId" style="color:var(--t2);font-weight:400;font-size:13px"></span><button class="ibtn" data-close title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dw-body">
+    <div class="sect" style="margin-top:0">任务概要</div>
+    <div class="ov">
+      <div class="cell"><div class="k">状态</div><div id="tkStatus" style="margin-top:3px"></div></div>
+      <div class="cell"><div class="k">触发方式</div><div id="tkTrigger" style="margin-top:3px"></div></div>
+      <div class="cell"><div class="k">创建时间</div><div id="tkTime" style="margin-top:3px"></div></div>
+      <div class="cell"><div class="k">token 用量</div><div class="mono" style="margin-top:3px">--（占位）</div></div>
+    </div>
+    <div class="errline" id="tkErr" style="display:none"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5.2v3.3M8 10.8v.1"/></svg><span id="tkErrMsg"></span></div>
+
+    <div class="sect">操作记录<span class="cnt" id="opCnt">3</span></div>
+    <div id="opList">
+      <div class="op">
+        <div class="ophead"><span class="kbd merge">merge</span><span class="opmem">mem_0002</span></div>
+        <div class="opdesc">合并重复的肠粉偏好记忆</div>
+        <div class="opfoot"><span class="oid">op_1</span><button class="btn sm warn rollback" data-op="op_1"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.8-3.8"/><path d="M3 2.5V5h2.5"/></svg>回滚</button></div>
+      </div>
+      <div class="op">
+        <div class="ophead"><span class="kbd inference">inference</span><span class="opmem">mem_0007</span></div>
+        <div class="opdesc">由工位+工号推断：用户任职于广州移动联创中心</div>
+        <div class="opfoot"><span class="oid">op_2</span><button class="btn sm warn rollback" data-op="op_2"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.8-3.8"/><path d="M3 2.5V5h2.5"/></svg>回滚</button></div>
+      </div>
+      <div class="op">
+        <div class="ophead"><span class="kbd invalidation">invalidation</span><span class="opmem">mem_0001</span></div>
+        <div class="opdesc">旧居住地记忆被新事实取代</div>
+        <div class="opfoot"><span class="oid">op_3</span><button class="btn sm warn rollback" data-op="op_3"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><path d="M3 8a5 5 0 1 0 1.8-3.8"/><path d="M3 2.5V5h2.5"/></svg>回滚</button></div>
+      </div>
+    </div>
+    <div class="empty-mini" id="opEmpty" style="display:none">该任务未产生操作记录</div>
+  </div>
+  <div class="dw-foot"><button class="btn" data-close>关闭</button></div>
+</div>
+
+<div class="mask" id="mask"></div>
+<div class="mask" id="dlgMask" style="z-index:55"></div>
+
+<!-- ============ Dialog：回滚确认 ============ -->
+<div class="dlg" id="dlgRollback">
+  <div class="dlg-head"><span class="wic"><svg class="i" style="width:12px;height:12px" viewBox="0 0 16 16"><path d="M8 5v4M8 11.2v.1"/></svg></span>回滚操作确认<button class="ibtn" style="margin-left:auto" data-dlg-close="dlgRollback" title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dlg-body">
+    即将回滚操作 <b class="mono" id="rbOpId">op_1</b>，回滚后将撤销该操作对记忆数据造成的变更，且不可自动重放。
+    <textarea class="inp" id="rbReason" maxlength="200" placeholder="请输入回滚原因（必填）" style="min-height:76px"></textarea>
+    <div class="errline" id="rbErr" style="display:none"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5.2v3.3M8 10.8v.1"/></svg>回滚原因为必填项</div>
+  </div>
+  <div class="dlg-foot"><button class="btn" data-dlg-close="dlgRollback">取消</button><button class="btn primary" id="rbConfirm">确认回滚</button></div>
+</div>
+
+<!-- ============ Dialog：删除确认 ============ -->
+<div class="dlg" id="dlgDelete">
+  <div class="dlg-head"><span class="wic"><svg class="i" style="width:12px;height:12px" viewBox="0 0 16 16"><path d="M8 5v4M8 11.2v.1"/></svg></span>删除确认<button class="ibtn" style="margin-left:auto" data-dlg-close="dlgDelete" title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dlg-body">即将删除 <b id="delName"></b>，删除后不可恢复，关联的配置与绑定将同步移除。</div>
+  <div class="dlg-foot"><button class="btn" data-dlg-close="dlgDelete">取消</button><button class="btn primary" id="delConfirm" style="background:#dc2626;border-color:#dc2626">删除</button></div>
+</div>
+
+<div class="toast" id="toast"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M5.8 8l1.5 1.5 3-3"/></svg><span id="toastMsg"></span></div>
+<div class="mock">Mock 数据</div>
+
+<style>
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.lk.danger{color:var(--er)}
+</style>
+
+<script>
+(function(){
+'use strict';
+var $=function(s,c){return (c||document).querySelector(s);};
+var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));};
+
+/* ---------- toast ---------- */
+var toastEl=$('#toast'),toastMsg=$('#toastMsg'),toastTimer=null;
+function toast(msg){toastMsg.textContent=msg;toastEl.classList.add('on');if(toastTimer){clearTimeout(toastTimer);}toastTimer=setTimeout(function(){toastEl.classList.remove('on');},2200);}
+
+/* ---------- Tab 切换 ---------- */
+$$('.ptab').forEach(function(t){t.addEventListener('click',function(){
+  $$('.ptab').forEach(function(x){x.classList.toggle('on',x===t);});
+  $$('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel-'+t.getAttribute('data-tab'));});
+});});
+
+/* ---------- 通用 toast 触发（左栏/占位按钮/链接） ---------- */
+document.addEventListener('click',function(e){
+  var nav=e.target.closest('[data-nav]');
+  if(nav){toast('原型未实现：'+nav.getAttribute('data-nav'));}
+  var tz=e.target.closest('[data-toast]');
+  if(tz){toast(tz.getAttribute('data-toast'));}
+});
+var headMsgs={btnBack:'原型未实现：返回记忆库列表',btnCopy:'已复制记忆库 ID（Mock）',btnEdit:'原型未实现：编辑记忆库',btnWrite:'原型未实现：写入记忆数据'};
+Object.keys(headMsgs).forEach(function(id){var el=document.getElementById(id);if(el){el.addEventListener('click',function(){toast(headMsgs[id]);});}});
+
+/* ---------- 规则组展开/收起 ---------- */
+$$('.rg-head').forEach(function(h){h.addEventListener('click',function(e){
+  if(e.target.closest('.rg-tools')){return;}
+  h.closest('.rgroup').classList.toggle('closed');
+});});
+
+/* ---------- switch / 分段 / radio 卡 ---------- */
+document.addEventListener('click',function(e){var sw=e.target.closest('.sw');if(sw){sw.classList.toggle('on');}});
+$$('.seg').forEach(function(seg){seg.addEventListener('click',function(e){var b=e.target.closest('button');if(!b){return;}$$('button',seg).forEach(function(x){x.classList.toggle('sel',x===b);});});});
+$$('.rcards').forEach(function(g){g.addEventListener('click',function(e){var c=e.target.closest('.rcard');if(!c){return;}$$('.rcard',g).forEach(function(x){x.classList.toggle('sel',x===c);});});});
+
+/* ---------- 下拉列表框 ---------- */
+$$('.dd').forEach(function(dd){
+  $('.dd-box',dd).addEventListener('click',function(e){e.stopPropagation();var wasOpen=dd.classList.contains('open');$$('.dd').forEach(function(d){d.classList.remove('open');});if(!wasOpen){dd.classList.add('open');}});
+  $$('.dd-opt',dd).forEach(function(o){o.addEventListener('click',function(){$$('.dd-opt',dd).forEach(function(x){x.classList.toggle('sel',x===o);});$('.dd-val',dd).textContent=o.getAttribute('data-v');dd.classList.remove('open');});});
+});
+document.addEventListener('click',function(e){if(!e.target.closest('.dd')){$$('.dd').forEach(function(d){d.classList.remove('open');});}});
+
+/* ---------- 输入计数 ---------- */
+function bindCnt(inputId,cntId,max){var inp=document.getElementById(inputId),c=document.getElementById(cntId);if(!inp||!c){return;}var f=function(){c.textContent=inp.value.length+' / '+max;inp.classList.remove('err');};inp.addEventListener('input',f);f();}
+bindCnt('factName','factNameCnt','32');
+bindCnt('factDesc','factDescCnt','128');
+bindCnt('pName','pNameCnt','32');
+bindCnt('pDesc','pDescCnt','128');
+bindCnt('qInput','qCnt','1024');
+
+/* ---------- slider 与数字框联动 ---------- */
+var rcRange=$('#rcRange'),rcNum=$('#rcNum');
+rcRange.addEventListener('input',function(){rcNum.value=rcRange.value;});
+rcNum.addEventListener('input',function(){var v=parseInt(rcNum.value,10);if(isNaN(v)){return;}v=Math.min(100,Math.max(1,v));rcNum.value=v;rcRange.value=v;});
+
+/* ---------- 抽屉 ---------- */
+var mask=$('#mask');
+function openDw(id){document.getElementById(id).classList.add('on');mask.classList.add('on');}
+function closeDw(){$$('.dw').forEach(function(d){d.classList.remove('on');});if(!$$('.dlg.on').length){mask.classList.remove('on');}}
+$$('[data-drawer]').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();openDw(b.getAttribute('data-drawer')==='fact'?'dwFact':'dwPortrait');});});
+$$('[data-close]').forEach(function(b){b.addEventListener('click',function(){closeDw();});});
+$$('[data-save]').forEach(function(b){b.addEventListener('click',function(){closeDw();toast('规则已保存（Mock）');});});
+mask.addEventListener('click',function(){if($$('.dlg.on').length){return;}closeDw();});
+
+/* ---------- 检索 ---------- */
+var btnSearch=$('#btnSearch'),resBody=$('#resBody'),reqId=$('#reqId');
+var EMPTY_HTML=resBody.innerHTML;
+var RES_FACT=[
+  {t:'事实记忆',scope:'范围:通用个人',c:'我住在广州天河区。',s:0.96,id:'mem_0004',u:'2026-10-09 15:36'},
+  {t:'事实记忆',scope:'范围:通用个人',c:'用户最喜欢吃广州的肠粉。',s:0.95,id:'mem_0002',u:'2026-10-09 15:36'}
+];
+var RES_SKILL=[
+  {t:'技能记忆',scope:'范围:工作流程',c:'写项目周报时先写结论再列依据。',s:0.90,id:'mem_skill_001',u:'2026-10-09 15:36'}
+];
+function resCard(r){return '<div class="rescard"><div class="hd"><span class="tag blue">'+r.t+'</span><span class="tag">'+r.scope+'</span><span class="score"><span class="bar"><i style="width:'+Math.round(r.s*100)+'%"></i></span>置信度 '+r.s.toFixed(2)+'</span></div><div class="ct">'+r.c+'</div><div class="ft"><span>记忆 ID：'+r.id+'</span><span>实体：laowang-001（老王）</span><span>更新时间：'+r.u+'</span></div></div>';}
+var SEARCH_ICON='<svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg>';
+btnSearch.addEventListener('click',function(){
+  var q=$('#qInput');
+  if(!q.value.trim()){q.classList.add('err');toast('请先输入检索内容');q.focus();return;}
+  btnSearch.disabled=true;
+  btnSearch.innerHTML='<span class="spin"></span>检索中…';
+  resBody.innerHTML='<div class="loadingbox"><span class="spin dark"></span>正在检索记忆…</div>';
+  setTimeout(function(){
+    var type=$('.dd-val',$('#ddType')).textContent;
+    var list=(type==='技能记忆')?RES_SKILL:RES_FACT;
+    resBody.innerHTML=list.map(resCard).join('');
+    reqId.textContent='req_mock_8f3a21';
+    btnSearch.disabled=false;
+    btnSearch.innerHTML=SEARCH_ICON+'检索';
+  },600);
+});
+$('#btnRefresh').addEventListener('click',function(){resBody.innerHTML=EMPTY_HTML;reqId.textContent='--';toast('检索结果已刷新');});
+
+/* ---------- 治理策略 ---------- */
+var govVersion=1;
+$('#btnSavePolicy').addEventListener('click',function(){govVersion+=1;$('#govVersion').textContent=govVersion;toast('策略已保存（version+1）');});
+
+/* ---------- 任务详情抽屉 ---------- */
+var TASKS={
+  tsk_consol_001:{st:'succeeded',cls:'ok',tr:'手动',ct:'2026-10-09 15:40'},
+  tsk_consol_002:{st:'partial',cls:'warn',tr:'自动（达到变更阈值）',ct:'2026-10-09 15:12'},
+  tsk_consol_003:{st:'processing',cls:'run',tr:'自动',ct:'2026-10-09 16:02'},
+  tsk_consol_004:{st:'failed',cls:'err',tr:'手动',ct:'2026-10-09 14:47',err:'error: embedding 服务超时'}
+};
+$$('.view-task').forEach(function(a){a.addEventListener('click',function(){
+  var id=a.getAttribute('data-task'),t=TASKS[id];
+  $('#taskTitleId').textContent=id;
+  $('#tkStatus').innerHTML='<span class="chip '+t.cls+'"><span class="dot"></span>'+t.st+'</span>';
+  $('#tkTrigger').textContent=t.tr;
+  $('#tkTime').textContent=t.ct;
+  var errBox=$('#tkErr');
+  if(t.err){$('#tkErrMsg').textContent=t.err;errBox.style.display='flex';}else{errBox.style.display='none';}
+  var failed=(t.st==='failed');
+  $('#opList').style.display=failed?'none':'block';
+  $('#opEmpty').style.display=failed?'block':'none';
+  $('#opCnt').textContent=failed?'0':'3';
+  openDw('dwTask');
+});});
+
+/* ---------- Dialog 通用 ---------- */
+var dlgMask=$('#dlgMask');
+function openDlg(id){document.getElementById(id).classList.add('on');dlgMask.classList.add('on');}
+function closeDlg(id){document.getElementById(id).classList.remove('on');if(!$$('.dlg.on').length){dlgMask.classList.remove('on');}}
+$$('[data-dlg-close]').forEach(function(b){b.addEventListener('click',function(){closeDlg(b.getAttribute('data-dlg-close'));});});
+dlgMask.addEventListener('click',function(){$$('.dlg.on').forEach(function(d){closeDlg(d.id);});});
+
+/* ---------- 回滚确认 ---------- */
+var rbBtn=null;
+document.addEventListener('click',function(e){
+  var rb=e.target.closest('.rollback');
+  if(!rb||rb.disabled){return;}
+  rbBtn=rb;
+  $('#rbOpId').textContent=rb.getAttribute('data-op');
+  $('#rbReason').value='';
+  $('#rbReason').classList.remove('err');
+  $('#rbErr').style.display='none';
+  openDlg('dlgRollback');
+});
+$('#rbReason').addEventListener('input',function(){$('#rbErr').style.display='none';this.classList.remove('err');});
+$('#rbConfirm').addEventListener('click',function(){
+  var r=$('#rbReason');
+  if(!r.value.trim()){$('#rbErr').style.display='flex';r.classList.add('err');r.focus();return;}
+  closeDlg('dlgRollback');
+  if(rbBtn){rbBtn.disabled=true;rbBtn.classList.remove('warn');rbBtn.textContent='已提交回滚';}
+  toast('已提交回滚');
+});
+
+/* ---------- 删除确认 ---------- */
+var delCtx=null;
+function askDelete(name,ctx){delCtx=ctx;$('#delName').textContent=name;openDlg('dlgDelete');}
+$$('.del-rule').forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();askDelete(b.getAttribute('data-name'),{type:'rule',row:b.closest('.rule-row'),group:b.closest('.rgroup')});});});
+document.addEventListener('click',function(e){var d=e.target.closest('.del-field');if(d){askDelete(d.getAttribute('data-name'),{type:'field',row:d.closest('tr')});}});
+$('#delConfirm').addEventListener('click',function(){
+  if(delCtx&&delCtx.row){
+    delCtx.row.remove();
+    if(delCtx.type==='rule'){
+      var g=delCtx.group,n=$$('.rule-row',g).length;
+      $('[data-gcnt]',g).textContent=n;
+      if(!n&&!$('.empty-mini',g)){$('.rg-body',g).insertAdjacentHTML('beforeend','<div class="empty-mini">该规则组暂无规则</div>');}
+    }
+    toast('已删除：'+$('#delName').textContent);
+  }
+  closeDlg('dlgDelete');
+  delCtx=null;
+});
+
+/* ---------- Esc 关闭 ---------- */
+document.addEventListener('keydown',function(e){
+  if(e.key!=='Escape'){return;}
+  var dl=$$('.dlg.on');
+  if(dl.length){closeDlg(dl[0].id);return;}
+  closeDw();
+  $$('.dd').forEach(function(d){d.classList.remove('open');});
+});
+})();
+</script>
+</body>
+</html>

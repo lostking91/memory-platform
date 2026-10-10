@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>移动云·记忆管理平台</title>
+<style>
+:root{
+  --blue:#1677ff; --blue-bg:#e8f3ff; --blue-bd:#bedaff;
+  --t1:#1d2129; --t2:#4e5969; --t3:#6f7680; --ph:#a2a8b3;
+  --bd:#e5e6eb; --bd2:#eef0f2; --panel:#f7f8fa; --panel2:#f2f3f5;
+  --black:#17181a; --orange:#f77234; --orange-bg:#fff3e8;
+  --green:#00a832; --green-bg:#e8ffea; --red:#f53f3f; --red-bg:#ffece8;
+  --purple1:#9a8cfa; --purple2:#6f5ce8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  font-size:14px;color:var(--t1);background:#fff;min-width:1180px;
+}
+button{font-family:inherit}
+input,textarea,select{font-family:inherit}
+.ico{display:inline-flex;align-items:center;justify-content:center;line-height:1;flex:none}
+.ico svg{width:1em;height:1em;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;display:block}
+.mono{font-family:ui-monospace,SFMono-Regular,Consolas,"Courier New",monospace}
+
+/* ---------- 顶栏 ---------- */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:#fff;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;padding:0 20px;gap:14px;z-index:50}
+.hamb{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;font-size:18px}
+.hamb:hover{background:var(--panel2)}
+.logo{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#4d7bff 0%,#7a5cf0 100%);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;flex:none}
+.brand{font-size:16px;font-weight:700;letter-spacing:.2px;white-space:nowrap}
+.topnav{display:flex;gap:2px;margin-left:18px;align-items:center}
+.tnav{padding:6px 12px;font-size:14px;color:var(--t2);cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.tnav:hover{background:var(--panel)}
+.tnav.on{color:var(--blue);font-weight:600}
+.tnav .flame{color:var(--orange);font-size:13px}
+.top-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.prepay{color:var(--orange);font-size:13px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.prepay .gdot{color:var(--green);font-size:14px}
+.space-sel{font-size:13px;color:var(--t2);display:flex;gap:6px;align-items:center;padding:6px 10px;border-radius:8px;cursor:pointer;white-space:nowrap}
+.space-sel:hover{background:var(--panel)}
+.tbtn{width:32px;height:32px;border-radius:50%;border:none;background:transparent;color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tbtn:hover{background:var(--panel2)}
+.tenant{text-align:right;font-size:11px;color:var(--t3);line-height:1.35;white-space:nowrap}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#3d8bff,#1677ff);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:13px;flex:none;cursor:pointer}
+
+/* ---------- 布局 ---------- */
+.layout{display:flex;padding-top:56px;min-height:100vh}
+.sidebar{width:168px;flex:none;background:#fff;border-right:1px solid var(--bd);padding:12px 8px 24px;
+  position:fixed;top:56px;bottom:0;left:0;overflow-y:auto}
+.nav-label{font-size:11px;color:var(--ph);padding:12px 10px 5px;letter-spacing:.5px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:13px;color:var(--t2);cursor:pointer;margin-bottom:2px}
+.nav-item .ico{font-size:15px;color:var(--t3)}
+.nav-item:hover{background:var(--panel)}
+.nav-item.on{background:var(--panel2);color:var(--t1);font-weight:600}
+.nav-item.on .ico{color:var(--t1)}
+.main{margin-left:168px;flex:1;padding:22px 32px 56px;min-width:0}
+
+/* ---------- 内容头 ---------- */
+.content-head{display:flex;align-items:center;gap:10px}
+.back-btn{width:32px;height:32px;border:none;background:transparent;border-radius:8px;color:var(--t1);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.back-btn:hover{background:var(--panel2)}
+.page-title{font-size:20px;font-weight:700}
+.copy-btn{width:28px;height:28px;border:none;background:transparent;border-radius:6px;color:var(--t3);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.copy-btn:hover{background:var(--panel2);color:var(--t1)}
+.head-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+.btn{cursor:pointer;border:none;border-radius:8px;font-size:13px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn-default{background:#fff;border:1px solid var(--bd);padding:7px 14px;color:var(--t1)}
+.btn-default:hover{border-color:#c9cdd4;background:var(--panel)}
+.btn-primary{background:var(--black);color:#fff;border-radius:999px;padding:8px 18px;font-weight:600}
+.btn-primary:hover{background:#000}
+.btn-primary.loading{opacity:.65;pointer-events:none}
+.btn-text{background:transparent;color:var(--t2);padding:7px 12px}
+.btn-text:hover{color:var(--t1);background:var(--panel2)}
+.btn-danger{background:var(--red);color:#fff;padding:7px 16px}
+.btn-danger:hover{background:#d93030}
+.spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:rot .7s linear infinite;flex:none}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* ---------- Tabs ---------- */
+.tabs{display:flex;gap:8px;margin:18px 0 20px}
+.tab{padding:6px 15px;border-radius:999px;font-size:13px;color:var(--t2);cursor:pointer;border:none;background:transparent}
+.tab:hover{color:var(--t1)}
+.tab.on{background:var(--panel2);color:var(--t1);font-weight:600}
+.tabpane{display:none}
+.tabpane.on{display:block}
+
+/* ---------- Tab1 规则组 ---------- */
+.group{background:var(--panel);border-radius:12px;padding:15px 18px;margin-bottom:14px}
+.group-head{display:flex;align-items:center;gap:12px}
+.chev{width:26px;height:26px;border:none;background:transparent;border-radius:6px;color:var(--t2);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.chev:hover{background:#eceef0}
+.chev .ico{transition:transform .2s}
+.group.closed .chev .ico{transform:rotate(180deg)}
+.g-icon{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--purple1) 0%,var(--purple2) 100%);
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;flex:none;box-shadow:0 2px 6px rgba(111,92,232,.25)}
+.g-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.g-count{background:#e9ebee;border-radius:4px;font-size:11px;padding:1px 7px;color:var(--t2);font-weight:500}
+.g-desc{font-size:12px;color:var(--t3);margin-top:4px}
+.g-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+.s-input{position:relative}
+.s-input .ico{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--ph);pointer-events:none}
+.s-input input{height:32px;width:180px;border:1px solid var(--bd);border-radius:8px;background:#fff;padding:0 10px 0 28px;font-size:12px;color:var(--t1);outline:none}
+.s-input input::placeholder{color:var(--ph)}
+.s-input input:focus{border-color:var(--blue)}
+.group-body{margin:14px 0 2px 78px;display:flex;flex-direction:column;gap:10px}
+.group.closed .group-body,.group.closed .group-empty{display:none}
+.rule-row{background:#fff;border:1px solid var(--bd2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.rule-row:hover{box-shadow:0 2px 10px rgba(29,33,41,.05)}
+.r-icon{width:32px;height:32px;border-radius:8px;background:var(--panel2);color:var(--t2);display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.r-title{font-size:13px;font-weight:600}
+.r-tags{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.tag{font-size:12px;color:var(--t2);background:var(--panel2);border-radius:4px;padding:2px 8px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.tag .ico{font-size:12px;color:var(--t3)}
+.tag.pro{color:var(--blue);background:var(--blue-bg)}
+.tag.pro .ico{color:var(--blue)}
+.row-actions{margin-left:auto;display:flex;gap:6px}
+.ibtn{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--t3);cursor:pointer;border:none;background:transparent;font-size:15px}
+.ibtn:hover{background:var(--panel2);color:var(--t1)}
+.ibtn.danger:hover{color:var(--red);background:var(--red-bg)}
+.group-empty{margin:14px 0 2px 78px;background:#fff;border:1px dashed #dfe3e8;border-radius:10px;padding:24px;text-align:center;color:var(--t3);font-size:12px}
+
+/* ---------- 抽屉 ---------- */
+.mask{position:fixed;inset:0;background:rgba(29,33,41,.45);opacity:0;pointer-events:none;transition:opacity .25s;z-index:90}
+.mask.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:560px;max-width:94vw;background:#fff;z-index:100;
+  transform:translateX(102%);transition:transform .28s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-8px 0 24px rgba(29,33,41,.10)}
+.drawer.show{transform:none}
+.d-head{padding:18px 24px;border-bottom:1px solid var(--bd);display:flex;align-items:center}
+.d-title{font-size:16px;font-weight:700}
+.d-close{margin-left:auto;width:30px;height:30px;border:none;background:transparent;border-radius:6px;color:var(--t3);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.d-close:hover{background:var(--panel2);color:var(--t1)}
+.d-body{padding:24px;overflow-y:auto;flex:1}
+.d-foot{padding:14px 24px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:12px;align-items:center;background:#fff}
+
+/* ---------- 表单 ---------- */
+.info-banner{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--t1);display:flex;gap:8px;align-items:flex-start;margin-bottom:22px;line-height:1.6}
+.info-banner .ico{color:var(--blue);font-size:15px;margin-top:2px}
+.f-label{font-size:13px;color:var(--t1);font-weight:600;margin:20px 0 8px;display:flex;gap:4px;align-items:center}
+.f-label:first-child{margin-top:0}
+.req{color:var(--red)}
+.f-label .ico{font-size:13px;color:var(--t3)}
+.f-label .lab-link{margin-left:auto;font-weight:400}
+.f-input{position:relative}
+.f-input input{width:100%;height:36px;border:1px solid var(--bd);border-radius:8px;padding:0 62px 0 12px;font-size:13px;color:var(--t1);outline:none;background:#fff}
+.f-input input:focus{border-color:var(--blue)}
+.count{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:12px}
+.f-textarea{width:100%;min-height:92px;border:1px solid var(--bd);border-radius:8px;padding:10px 12px;font-size:13px;resize:vertical;outline:none;color:var(--t1);line-height:1.7;background:#fff}
+.f-textarea::placeholder{color:var(--ph)}
+.f-textarea:focus{border-color:var(--blue)}
+.ta-count{text-align:right;font-size:12px;color:var(--t3);margin-top:5px}
+.link{color:var(--blue);cursor:pointer;font-size:13px;background:none;border:none;padding:0;display:inline-flex;align-items:center;gap:4px}
+.link:hover{color:#0e5fd8}
+
+.rcards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rcard{border:1px solid var(--bd);background:#fafbfc;border-radius:10px;padding:14px 14px 14px;cursor:pointer;position:relative;transition:border-color .15s,background .15s}
+.rcard:hover{border-color:#c9cdd4}
+.rc-top{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--t1);padding-right:26px}
+.rc-top .ico{font-size:15px;color:var(--t2)}
+.rc-desc{font-size:12px;color:var(--t3);margin-top:8px;line-height:1.65}
+.radio{position:absolute;right:12px;top:14px;width:16px;height:16px;border-radius:50%;border:1px solid #c9cdd4;background:#fff;flex:none}
+.rcard.sel{border-color:var(--blue);background:#fff}
+.rcard.sel .radio{border-color:var(--blue);background:var(--blue);box-shadow:inset 0 0 0 3px #fff}
+.badge-rec{background:var(--orange-bg);color:var(--orange);font-size:11px;border-radius:4px;padding:1px 6px;display:inline-flex;gap:3px;align-items:center;font-weight:500;flex:none}
+.badge-rec .ico{font-size:11px}
+
+.sw-row{display:flex;align-items:center;gap:10px}
+.sw{width:40px;height:22px;border-radius:999px;background:#c9cdd4;position:relative;cursor:pointer;transition:background .2s;flex:none;border:none}
+.sw::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.sw::before{content:"";position:absolute;top:0;height:22px;line-height:22px;font-size:10px;color:#fff;left:auto;right:6px}
+.sw.on{background:var(--blue)}
+.sw.on::after{left:20px}
+.sw-desc{font-size:12px;color:var(--t3)}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg-btn{padding:7px 16px;border-radius:8px;background:var(--panel2);font-size:13px;color:var(--t2);cursor:pointer;border:none}
+.seg-btn:hover{background:#e9ebee}
+.seg-btn.on{background:var(--black);color:#fff;font-weight:600}
+.seg-btn.on:hover{background:#000}
+
+/* ---------- 表格 ---------- */
+.tbl-wrap{background:#fff;border-radius:4px;overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:#f5f6f8;color:var(--t2);font-weight:500;text-align:left;padding:10px 16px;font-size:12px;white-space:nowrap}
+.tbl th .ico{font-size:12px;color:var(--t3);margin-left:4px;vertical-align:-1px}
+.tbl td{padding:12px 16px;border-bottom:1px solid #f0f1f3;color:var(--t1);white-space:nowrap}
+.tbl tbody tr{transition:background .12s}
+.tbl tbody tr:hover{background:var(--panel)}
+.tbl .link+.link{margin-left:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;border-radius:4px;padding:2px 8px;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.chip.blue{color:#0e5fd8;background:var(--blue-bg)}
+.chip.green{color:var(--green);background:var(--green-bg)}
+.chip.orange{color:#d46b08;background:var(--orange-bg)}
+.chip.red{color:var(--red);background:var(--red-bg)}
+.chip.gray{color:var(--t2);background:var(--panel2)}
+.chip.purple{color:#6f5ce8;background:#f0edff}
+
+/* ---------- Tab2 ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+.stat{background:var(--panel);border-radius:12px;padding:16px 20px;position:relative}
+.s-label{font-size:13px;color:var(--t2)}
+.s-num{font-size:26px;font-weight:700;margin-top:6px;letter-spacing:.3px}
+.s-icon{position:absolute;right:18px;top:16px;color:var(--t3);font-size:19px}
+.detail-toolbar{margin-bottom:14px}
+.detail-toolbar .s-input input{width:300px;height:34px;font-size:13px}
+
+/* ---------- Tab3 ---------- */
+.search-wrap{display:flex;gap:16px;align-items:stretch}
+.cfg{width:300px;flex:none}
+.cfg-title{font-size:14px;font-weight:700}
+.cfg-sub{font-size:12px;color:var(--t3);margin-top:5px;line-height:1.6}
+.cfg .f-label{margin:18px 0 8px}
+.dd{position:relative}
+.dd-btn{width:100%;min-height:34px;border:1px solid var(--bd);border-radius:8px;background:#fff;display:flex;align-items:center;padding:6px 10px;font-size:13px;cursor:pointer;color:var(--t1);text-align:left}
+.dd-btn:hover{border-color:#c9cdd4}
+.dd-btn .ico{margin-left:auto;color:var(--t3);font-size:13px}
+.dd-menu{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 16px rgba(29,33,41,.10);padding:4px;display:none;z-index:20}
+.dd.open .dd-menu{display:block}
+.dd-opt{padding:7px 10px;border-radius:6px;font-size:13px;color:var(--t2);cursor:pointer}
+.dd-opt:hover{background:var(--panel)}
+.dd-opt.sel{background:var(--blue-bg);color:var(--t1);font-weight:500}
+.range-row{display:flex;align-items:center;gap:12px}
+.range-row input[type=range]{flex:1;accent-color:var(--blue);height:22px}
+.num-input{width:56px;height:30px;border:1px solid var(--bd);border-radius:6px;text-align:center;font-size:13px;color:var(--t1);outline:none}
+.num-input:focus{border-color:var(--blue)}
+.range-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);margin-top:2px;padding-right:68px}
+.sw-line{display:flex;align-items:center;gap:8px;margin:14px 0}
+.sw-line .lb{font-size:13px;color:var(--t1);font-weight:600;display:flex;align-items:center;gap:4px}
+.sw-line .lb .ico{font-size:13px;color:var(--t3)}
+.cfg .btn-primary{width:100%;margin-top:20px;padding:9px 0}
+.res{flex:1;background:var(--panel);border-radius:12px;min-height:560px;display:flex;flex-direction:column;min-width:0}
+.res-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid #eceef0;font-size:14px;font-weight:600}
+.res-head .ico{font-size:15px;color:var(--t2)}
+.res-head .right{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--t3);font-weight:400}
+.res-body{flex:1;position:relative;overflow-y:auto}
+.empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--t3);font-size:13px}
+.empty .e-ico{width:44px;height:44px;border-radius:50%;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;color:#c9cdd4;font-size:18px;background:#fff}
+.res-card{background:#fff;border:1px solid var(--bd2);border-radius:10px;padding:14px 16px;margin:12px 16px}
+.res-card:first-child{margin-top:16px}
+.rc-line{font-size:14px;line-height:1.7;color:var(--t1)}
+.rc-meta{display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap}
+.rc-time{font-size:12px;color:var(--t3);margin-left:auto}
+.res-q{margin:14px 16px 0;font-size:12px;color:var(--t3)}
+
+/* ---------- Tab4 治理 ---------- */
+.gov-card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:20px;margin-bottom:16px}
+.gov-head{display:flex;align-items:center;gap:10px}
+.gov-title{font-size:15px;font-weight:700}
+.gov-head .sw-row{margin-left:18px}
+.gov-head .btn{margin-left:auto}
+.thr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.thr{background:var(--panel);border-radius:8px;padding:10px 12px}
+.thr .k{font-size:11px;color:var(--t3);font-family:ui-monospace,SFMono-Regular,Consolas,monospace;display:flex;align-items:center;gap:6px}
+.thr input{width:100%;border:none;background:transparent;font-size:15px;font-weight:600;margin-top:5px;outline:none;color:var(--t1);padding:0}
+.thr input[readonly]{color:var(--t2)}
+.gov-sec-title{font-size:15px;font-weight:700;margin:22px 0 12px}
+.gov-table{border:1px solid var(--bd2);border-radius:10px;overflow:hidden}
+.gov-table .tbl td,.gov-table .tbl th{white-space:nowrap}
+
+/* 任务抽屉 */
+.kv{display:grid;grid-template-columns:92px 1fr;row-gap:11px;font-size:13px;align-items:start}
+.kv .k{color:var(--t3)}
+.kv .v{color:var(--t1)}
+.err-banner{background:var(--red-bg);border:1px solid #fdcdc5;border-radius:8px;padding:10px 12px;font-size:13px;color:#cb2634;display:flex;gap:8px;align-items:flex-start;margin-top:16px;line-height:1.6}
+.op-sec{font-size:13px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:6px}
+.op-item{border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.op-item:hover{border-color:#c9cdd4}
+.op-head{display:flex;align-items:center;gap:8px}
+.op-id{font-family:ui-monospace,Consolas,monospace;font-size:12px;color:var(--t3)}
+.op-head .btn{margin-left:auto}
+.op-desc{font-size:13px;color:var(--t2);margin-top:9px;line-height:1.7}
+.btn-mini{background:#fff;border:1px solid var(--bd);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--t2)}
+.btn-mini:hover{border-color:#c9cdd4;color:var(--t1)}
+
+/* ---------- Modal / Toast / Mock ---------- */
+.modal-mask{position:fixed;inset:0;background:rgba(29,33,41,.45);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-mask.show{display:flex}
+.modal{background:#fff;border-radius:12px;width:440px;max-width:92vw;padding:22px 24px;box-shadow:0 12px 40px rgba(29,33,41,.18)}
+.m-title{font-size:15px;font-weight:700;display:flex;gap:9px;align-items:center}
+.m-title .ico{font-size:17px}
+.m-title.danger .ico{color:var(--red)}
+.m-body{font-size:13px;color:var(--t2);margin-top:12px;line-height:1.75}
+.m-body .f-textarea{min-height:76px;margin-top:10px}
+.m-err{color:var(--red);font-size:12px;margin-top:6px;display:none}
+.m-err.show{display:block}
+.m-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.toast{position:fixed;top:68px;left:50%;transform:translate(-50%,-10px);background:#1d2129;color:#fff;font-size:13px;
+  padding:9px 16px;border-radius:8px;display:flex;gap:8px;align-items:center;opacity:0;pointer-events:none;transition:.25s;z-index:300;box-shadow:0 6px 20px rgba(29,33,41,.25);max-width:70vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast .ico{color:#7ee2a8;font-size:15px}
+.mock-badge{position:fixed;right:18px;top:64px;z-index:40;font-size:11px;color:var(--t3);border:1px dashed #c9cdd4;border-radius:4px;padding:2px 7px;background:#fff;letter-spacing:.3px}
+
+@media (max-width:1280px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .rcards{grid-template-columns:1fr}
+  .thr-grid{grid-template-columns:repeat(2,1fr)}
+  .search-wrap{flex-direction:column}
+  .cfg{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= 顶栏 ================= -->
+<header class="topbar">
+  <div class="hamb" data-toast="原型未实现"><i class="ico" data-ico="menu"></i></div>
+  <div class="logo"><i class="ico" data-ico="spark"></i></div>
+  <div class="brand">移动云·记忆管理平台</div>
+  <nav class="topnav">
+    <span class="tnav" data-toast="原型未实现">概览</span>
+    <span class="tnav on">记忆 <i class="ico" data-ico="caret"></i></span>
+    <span class="tnav" data-toast="原型未实现">TokenPlan <i class="ico flame" data-ico="flame"></i></span>
+    <span class="tnav" data-toast="原型未实现">CLI</span>
+    <span class="tnav" data-toast="原型未实现">文档</span>
+  </nav>
+  <div class="top-right">
+    <span class="prepay">(-3) 预付费 <i class="ico gdot" data-ico="check-c"></i></span>
+    <span class="space-sel" data-toast="原型未实现">默认业务空间 <i class="ico" data-ico="caret"></i></span>
+    <button class="tbtn" data-toast="原型未实现"><i class="ico" data-ico="bell"></i></button>
+    <button class="tbtn" data-toast="原型未实现"><i class="ico" data-ico="help"></i></button>
+    <button class="tbtn" data-toast="原型未实现"><i class="ico" data-ico="gear"></i></button>
+    <span class="tenant">198653270634…<br>主账号</span>
+    <div class="avatar">王</div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ================= 侧栏 ================= -->
+  <aside class="sidebar">
+    <div class="nav-item" data-toast="原型未实现"><i class="ico" data-ico="home"></i>Playground</div>
+    <div class="nav-label">记忆存储</div>
+    <div class="nav-item on"><i class="ico" data-ico="db"></i>记忆库</div>
+    <div class="nav-label">记忆治理</div>
+    <div class="nav-item" data-toast="原型未实现"><i class="ico" data-ico="trace"></i>记忆溯源</div>
+    <div class="nav-item" data-toast="原型未实现"><i class="ico" data-ico="shield"></i>记忆审计</div>
+    <div class="nav-label">其他</div>
+    <div class="nav-item" data-toast="原型未实现"><i class="ico" data-ico="link"></i>服务渠道</div>
+    <div class="nav-item" data-toast="原型未实现"><i class="ico" data-ico="chart"></i>用量</div>
+  </aside>
+
+  <!-- ================= 主区 ================= -->
+  <main class="main">
+    <div class="content-head">
+      <button class="back-btn" data-toast="原型未实现"><i class="ico" data-ico="left"></i></button>
+      <h1 class="page-title">记忆详情： 默认记忆库</h1>
+      <button class="copy-btn" id="copyBtn" title="复制记忆库 ID"><i class="ico" data-ico="copy"></i></button>
+      <div class="head-actions">
+        <button class="ibtn" data-toast="原型未实现" title="文档"><i class="ico" data-ico="doc"></i></button>
+        <button class="btn btn-default" data-toast="原型未实现">编辑</button>
+        <button class="btn btn-primary" data-toast="原型未实现"><i class="ico" data-ico="db"></i>写入记忆数据</button>
+      </div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="rules">记忆规则</button>
+      <button class="tab" data-tab="detail">记忆详情</button>
+      <button class="tab" data-tab="search">记忆检索</button>
+      <button class="tab" data-tab="gov">记忆治理</button>
+    </div>
+
+    <!-- ============ Tab1 记忆规则 ============ -->
+    <section class="tabpane on" id="pane-rules">
+
+      <!-- 组1 事实记忆规则 -->
+      <div class="group" id="grp-fact">
+        <div class="group-head">
+          <button class="chev" data-collapse="grp-fact" title="收起/展开"><i class="ico" data-ico="up"></i></button>
+          <div class="g-icon"><i class="ico" data-ico="doc"></i></div>
+          <div>
+            <div class="g-title">事实记忆规则 <span class="g-count" id="cnt-fact">1</span></div>
+            <div class="g-desc">捕捉对话中明确或隐含的事实信息</div>
+          </div>
+          <div class="g-actions">
+            <button class="btn btn-default" data-toast="原型未实现"><i class="ico" data-ico="plus"></i>事实记忆规则</button>
+            <div class="s-input"><i class="ico" data-ico="search"></i><input type="text" placeholder="请输入名称" data-filter="grp-fact"></div>
+          </div>
+        </div>
+        <div class="group-body">
+          <div class="rule-row" data-name="默认记忆片段规则">
+            <div class="r-icon"><i class="ico" data-ico="doc"></i></div>
+            <div>
+              <div class="r-title">默认记忆片段规则</div>
+              <div class="r-tags">
+                <span class="tag"><i class="ico" data-ico="sync"></i>自动更新:开</span>
+                <span class="tag"><i class="ico" data-ico="lines"></i>默认抽取指令</span>
+                <span class="tag"><i class="ico" data-ico="clock"></i>180天</span>
+                <span class="tag pro"><i class="ico" data-ico="spark"></i>Pro</span>
+              </div>
+            </div>
+            <div class="row-actions">
+              <button class="ibtn" data-drawer="drawerFact" title="编辑"><i class="ico" data-ico="pencil"></i></button>
+              <button class="ibtn danger" data-del="默认记忆片段规则" data-deltype="规则" title="删除"><i class="ico" data-ico="trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 组2 用户画像规则 -->
+      <div class="group closed" id="grp-profile">
+        <div class="group-head">
+          <button class="chev" data-collapse="grp-profile" title="收起/展开"><i class="ico" data-ico="up"></i></button>
+          <div class="g-icon"><i class="ico" data-ico="person"></i></div>
+          <div>
+            <div class="g-title">用户画像规则 <span class="g-count" id="cnt-profile">1</span></div>
+            <div class="g-desc">捕捉用户稳定的偏好与属性</div>
+          </div>
+          <div class="g-actions">
+            <button class="btn btn-default" data-toast="原型未实现"><i class="ico" data-ico="plus"></i>用户画像规则</button>
+            <div class="s-input"><i class="ico" data-ico="search"></i><input type="text" placeholder="请输入名称" data-filter="grp-profile"></div>
+          </div>
+        </div>
+        <div class="group-body">
+          <div class="rule-row" data-name="默认画像">
+            <div class="r-icon"><i class="ico" data-ico="person"></i></div>
+            <div>
+              <div class="r-title">默认画像</div>
+              <div class="r-tags">
+                <span class="tag"><i class="ico" data-ico="sync"></i>自动更新:开</span>
+                <span class="tag"><i class="ico" data-ico="lines"></i>12 个画像字段</span>
+                <span class="tag"><i class="ico" data-ico="clock"></i>180天</span>
+                <span class="tag pro"><i class="ico" data-ico="spark"></i>Pro</span>
+              </div>
+            </div>
+            <div class="row-actions">
+              <button class="ibtn" data-drawer="drawerProfile" title="编辑"><i class="ico" data-ico="pencil"></i></button>
+              <button class="ibtn danger" data-del="默认画像" data-deltype="规则" title="删除"><i class="ico" data-ico="trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 组3 技能记忆规则 -->
+      <div class="group closed" id="grp-skill">
+        <div class="group-head">
+          <button class="chev" data-collapse="grp-skill" title="收起/展开"><i class="ico" data-ico="up"></i></button>
+          <div class="g-icon"><i class="ico" data-ico="wand"></i></div>
+          <div>
+            <div class="g-title">技能记忆规则 <span class="g-count">0</span></div>
+            <div class="g-desc">从交互中沉淀可复用的技能与流程，用于增强任务的执行上下文</div>
+          </div>
+          <div class="g-actions">
+            <button class="btn btn-default" data-toast="原型未实现"><i class="ico" data-ico="plus"></i>技能记忆规则</button>
+            <div class="s-input"><i class="ico" data-ico="search"></i><input type="text" placeholder="请输入名称" data-filter="grp-skill"></div>
+          </div>
+        </div>
+        <div class="group-empty">暂无数据</div>
+      </div>
+    </section>
+
+    <!-- ============ Tab2 记忆详情 ============ -->
+    <section class="tabpane" id="pane-detail">
+      <div class="stats">
+        <div class="stat"><div class="s-label">事实记忆数</div><div class="s-num">6</div><span class="s-icon"><i class="ico" data-ico="cube"></i></span></div>
+        <div class="stat"><div class="s-label">用户画像数</div><div class="s-num">1</div><span class="s-icon"><i class="ico" data-ico="person"></i></span></div>
+        <div class="stat"><div class="s-label">技能记忆数</div><div class="s-num">1</div><span class="s-icon"><i class="ico" data-ico="wand"></i></span></div>
+        <div class="stat"><div class="s-label">记忆实体数</div><div class="s-num">1</div><span class="s-icon"><i class="ico" data-ico="layers"></i></span></div>
+      </div>
+      <div class="detail-toolbar">
+        <div class="s-input"><i class="ico" data-ico="search"></i><input type="text" id="detailSearch" placeholder="请输入实体 ID，支持模糊搜索"></div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>记忆实体类型 <i class="ico" data-ico="filter"></i></th>
+            <th>实体ID</th><th>更新时间</th><th>事实记忆数</th><th>用户画像数</th><th>技能记忆数</th><th>操作</th>
+          </tr></thead>
+          <tbody id="detailBody">
+            <tr data-eid="laowang-001">
+              <td><span class="chip gray">user</span></td>
+              <td>laowang-001（老王）</td>
+              <td>2026-10-09 15:36</td>
+              <td>6</td><td>1</td><td>1</td>
+              <td><button class="link" data-toast="原型未实现">查看</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============ Tab3 记忆检索 ============ -->
+    <section class="tabpane" id="pane-search">
+      <div class="search-wrap">
+        <div class="cfg">
+          <div class="cfg-title">记忆检索配置调试</div>
+          <div class="cfg-sub">支持"事实记忆"与"技能记忆"并行检索</div>
+
+          <div class="f-label">记忆类型</div>
+          <div class="dd" id="ddType">
+            <button class="dd-btn"><span class="dd-val">事实记忆</span><i class="ico" data-ico="caret"></i></button>
+            <div class="dd-menu">
+              <div class="dd-opt sel" data-v="事实记忆">事实记忆</div>
+              <div class="dd-opt" data-v="技能记忆">技能记忆</div>
+            </div>
+          </div>
+
+          <div class="f-label">事实记忆规则</div>
+          <div class="dd" id="ddRule">
+            <button class="dd-btn"><span class="dd-val">默认记忆片段规则</span><i class="ico" data-ico="caret"></i></button>
+            <div class="dd-menu">
+              <div class="dd-opt sel" data-v="默认记忆片段规则">默认记忆片段规则</div>
+            </div>
+          </div>
+
+          <div class="f-label">最大召回数量 <i class="ico" data-ico="info"></i></div>
+          <div class="range-row">
+            <input type="range" id="recallRange" min="1" max="100" value="1">
+            <input type="number" class="num-input" id="recallNum" min="1" max="100" value="1">
+          </div>
+          <div class="range-scale"><span>1</span><span>100</span></div>
+
+          <div class="sw-line"><span class="lb">意图识别信息 <i class="ico" data-ico="info"></i></span><button class="sw" data-sw></button></div>
+          <div class="sw-line"><span class="lb">改写</span><button class="sw" data-sw></button></div>
+          <div class="sw-line"><span class="lb">排序</span><button class="sw" data-sw></button></div>
+
+          <div class="f-label">输入 <span class="req">*</span></div>
+          <textarea class="f-textarea" id="queryInput" maxlength="1024" placeholder="针对所选记忆类型进行检索调试，编辑对话及记忆，最多可输入1024个字符"></textarea>
+          <div class="ta-count" id="queryCount">0 / 1024</div>
+
+          <button class="btn btn-primary" id="searchBtn">检索</button>
+        </div>
+
+        <div class="res">
+          <div class="res-head"><i class="ico" data-ico="doc"></i>检索结果
+            <span class="right">Request ID: <span id="reqId">--</span>
+              <button class="ibtn" id="resRefresh" title="刷新"><i class="ico" data-ico="sync"></i></button>
+            </span>
+          </div>
+          <div class="res-body" id="resBody">
+            <div class="empty">
+              <span class="e-ico"><i class="ico" data-ico="down"></i></span>
+              暂无数据
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Tab4 记忆治理 ============ -->
+    <section class="tabpane" id="pane-gov">
+      <div class="gov-card">
+        <div class="gov-head">
+          <span class="gov-title">治理策略</span>
+          <div class="sw-row">
+            <button class="sw" id="autoConsolSw" data-sw></button>
+            <span class="sw-desc">自动整合：记忆变更累积后自动触发整合任务</span>
+          </div>
+          <button class="btn btn-primary" id="savePolicy">保存策略</button>
+        </div>
+        <div class="thr-grid">
+          <div class="thr"><div class="k">change_threshold</div><input type="number" value="5"></div>
+          <div class="thr"><div class="k">idle_minutes</div><input type="number" value="10"></div>
+          <div class="thr"><div class="k">cooldown_minutes</div><input type="number" value="60"></div>
+          <div class="thr"><div class="k">max_wait_minutes</div><input type="number" value="1440"></div>
+          <div class="thr"><div class="k">max_memories</div><input type="number" value="200"></div>
+          <div class="thr"><div class="k">max_model_calls</div><input type="number" value="20"></div>
+          <div class="thr"><div class="k">version <span class="chip gray">只读</span></div><input type="text" id="policyVersion" value="1" readonly></div>
+        </div>
+      </div>
+
+      <div class="gov-sec-title">整合任务</div>
+      <div class="gov-table tbl-wrap">
+        <table class="tbl">
+          <thead><tr>
+            <th>任务ID</th><th>用户</th><th>状态</th><th>触发方式</th><th>selected</th><th>processed</th><th>remaining</th><th>model_calls</th><th>创建时间</th><th>操作</th>
+          </tr></thead>
+          <tbody>
+            <tr><td class="mono">tsk_consol_001</td><td>laowang-001</td><td><span class="chip green"><span class="dot"></span>succeeded</span></td><td>手动</td><td>6</td><td>6</td><td>0</td><td>3</td><td>2026-10-09 15:40</td><td><button class="link" data-task="tsk_consol_001">查看详情</button></td></tr>
+            <tr><td class="mono">tsk_consol_002</td><td>laowang-001</td><td><span class="chip orange"><span class="dot"></span>partial</span></td><td>自动（达到变更阈值）</td><td>4</td><td>2</td><td>2</td><td>2</td><td>2026-10-09 15:12</td><td><button class="link" data-task="tsk_consol_002">查看详情</button></td></tr>
+            <tr><td class="mono">tsk_consol_003</td><td>laowang-001</td><td><span class="chip blue"><span class="dot"></span>processing</span></td><td>自动</td><td>4</td><td>1</td><td>3</td><td>1</td><td>2026-10-09 16:02</td><td><button class="link" data-task="tsk_consol_003">查看详情</button></td></tr>
+            <tr><td class="mono">tsk_consol_004</td><td>laowang-001</td><td><span class="chip red"><span class="dot"></span>failed</span></td><td>手动</td><td>0</td><td>0</td><td>0</td><td>0</td><td>2026-10-09 14:47</td><td><button class="link" data-task="tsk_consol_004">查看详情</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="mock-badge">Mock 数据</div>
+<div class="mask" id="mask"></div>
+
+<!-- ================= 抽屉：事实规则 ================= -->
+<aside class="drawer" id="drawerFact">
+  <div class="d-head"><span class="d-title">编辑事实记忆规则</span>
+    <button class="d-close" data-close><i class="ico" data-ico="close"></i></button></div>
+  <div class="d-body">
+    <div class="info-banner"><i class="ico" data-ico="info"></i><span>说明： 编辑规则不会对已产生的记忆数据造成影响。</span></div>
+
+    <div class="f-label">规则名称 <span class="req">*</span></div>
+    <div class="f-input"><input type="text" maxlength="32" value="默认记忆片段规则" data-count="c1"><span class="count" id="c1">8 / 32</span></div>
+
+    <div class="f-label">规则描述</div>
+    <textarea class="f-textarea" maxlength="128" placeholder="请输入描述" data-count="c2"></textarea>
+    <div class="ta-count" id="c2">0 / 128</div>
+
+    <div class="f-label">规则指令 <span class="req">*</span> <i class="ico" data-ico="info"></i></div>
+    <div class="rcards" data-rcgroup>
+      <div class="rcard sel">
+        <div class="rc-top"><i class="ico" data-ico="wand"></i>默认规则指令</div>
+        <div class="rc-desc">推荐， 在多数数据集上最佳效果</div>
+        <span class="radio"></span>
+      </div>
+      <div class="rcard">
+        <div class="rc-top"><i class="ico" data-ico="doc"></i>自定义规则指令</div>
+        <div class="rc-desc">自定义记忆规则指令</div>
+        <span class="radio"></span>
+      </div>
+    </div>
+
+    <div class="f-label">自动更新</div>
+    <div class="sw-row"><button class="sw on" data-sw></button><span class="sw-desc">开启后，模型会自动更新记忆内容</span></div>
+
+    <div class="f-label">记忆过期时间</div>
+    <div class="seg" data-seg>
+      <button class="seg-btn">7天</button><button class="seg-btn">30天</button>
+      <button class="seg-btn on">180天</button><button class="seg-btn">永不过期</button>
+    </div>
+
+    <div class="f-label">记忆抽取模式 <span class="req">*</span></div>
+    <div class="rcards" data-rcgroup>
+      <div class="rcard sel">
+        <div class="rc-top"><i class="ico" data-ico="wand"></i>高效指令执行</div>
+        <div class="rc-desc">指令遵循更强，响应延迟更低，适合常规业务场景</div>
+        <span class="radio"></span>
+      </div>
+      <div class="rcard">
+        <div class="rc-top"><i class="ico" data-ico="monitor"></i>记忆智能抽取 <span class="badge-rec"><i class="ico" data-ico="spark"></i>推荐</span></div>
+        <div class="rc-desc">记忆主动抽取与智能更新，综合效果好，更适合复杂业务场景</div>
+        <span class="radio"></span>
+      </div>
+    </div>
+
+    <div class="f-label">记忆抽取版本 <span class="req">*</span> <i class="ico" data-ico="info"></i>
+      <button class="link lab-link" data-toast="原型未实现"><i class="ico" data-ico="flame"></i>计费详情</button>
+    </div>
+    <div class="rcards" data-rcgroup>
+      <div class="rcard sel">
+        <div class="rc-top"><i class="ico" data-ico="shield"></i>Pro <span class="badge-rec"><i class="ico" data-ico="spark"></i>推荐</span></div>
+        <div class="rc-desc">更强大的大模型进行记忆抽取与检索重排，面向对记忆准确率要求…</div>
+        <span class="radio"></span>
+      </div>
+      <div class="rcard">
+        <div class="rc-top"><i class="ico" data-ico="speaker"></i>Lite</div>
+        <div class="rc-desc">轻量模型记忆抽取与向量检索，适合大规模、成本敏感的应用</div>
+        <span class="radio"></span>
+      </div>
+    </div>
+
+    <div class="f-label">多模态</div>
+    <div class="sw-row"><button class="sw" data-sw></button><span class="sw-desc">开启后，支持多模态内容的记忆抽取</span></div>
+  </div>
+  <div class="d-foot">
+    <button class="btn btn-text" data-close>取消</button>
+    <button class="btn btn-primary" data-save="规则已保存（Mock）">确认</button>
+  </div>
+</aside>
+
+<!-- ================= 抽屉：画像规则 ================= -->
+<aside class="drawer" id="drawerProfile">
+  <div class="d-head"><span class="d-title">编辑用户画像规则</span>
+    <button class="d-close" data-close><i class="ico" data-ico="close"></i></button></div>
+  <div class="d-body">
+    <div class="f-label">画像规则名称 <span class="req">*</span></div>
+    <div class="f-input"><input type="text" maxlength="32" value="默认画像" data-count="c3"><span class="count" id="c3">4 / 32</span></div>
+
+    <div class="f-label">规则描述</div>
+    <textarea class="f-textarea" maxlength="128" data-count="c4">系统自动创建的默认画像模板</textarea>
+    <div class="ta-count" id="c4">13 / 128</div>
+
+    <div class="f-label">记忆抽取模式 <span class="req">*</span></div>
+    <div class="rcards" data-rcgroup>
+      <div class="rcard sel">
+        <div class="rc-top"><i class="ico" data-ico="wand"></i>高效指令执行</div>
+        <div class="rc-desc">指令遵循更强，响应延迟更低，适合常规业务场景</div>
+        <span class="radio"></span>
+      </div>
+      <div class="rcard">
+        <div class="rc-top"><i class="ico" data-ico="monitor"></i>记忆智能抽取 <span class="badge-rec"><i class="ico" data-ico="spark"></i>推荐</span></div>
+        <div class="rc-desc">记忆主动抽取与智能更新，综合效果好，更适合复杂业务场景</div>
+        <span class="radio"></span>
+      </div>
+    </div>
+
+    <div class="f-label">记忆抽取版本 <span class="req">*</span> <i class="ico" data-ico="info"></i>
+      <button class="link lab-link" data-toast="原型未实现"><i class="ico" data-ico="flame"></i>计费详情</button>
+    </div>
+    <div class="rcards" data-rcgroup>
+      <div class="rcard sel">
+        <div class="rc-top"><i class="ico" data-ico="shield"></i>Pro <span class="badge-rec"><i class="ico" data-ico="spark"></i>推荐</span></div>
+        <div class="rc-desc">更强大的大模型进行记忆抽取与检索重排，面向对记忆准确率要求高的企业级场景</div>
+        <span class="radio"></span>
+      </div>
+      <div class="rcard">
+        <div class="rc-top"><i class="ico" data-ico="speaker"></i>Lite</div>
+        <div class="rc-desc">轻量模型记忆抽取与向量检索，适合大规模、成本敏感的应用</div>
+        <span class="radio"></span>
+      </div>
+    </div>
+
+    <div class="f-label">画像字段列表
+      <button class="link lab-link" data-toast="原型未实现">添加用户画像字段 （12/50）</button>
+    </div>
+    <div class="tbl-wrap" style="border:1px solid var(--bd2);border-radius:8px">
+      <table class="tbl" id="fieldTable">
+        <thead><tr><th style="width:26%">用户画像字段名称</th><th>描述</th><th style="width:14%">初始值</th><th style="width:16%">操作</th></tr></thead>
+        <tbody>
+          <tr><td>内容偏好</td><td>用户喜欢阅读或观看的内容类型（如新…</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="内容偏好" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>社会关系（朋友圈）</td><td>用户的朋友圈构成、社交习惯或重要社…</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="社会关系（朋友圈）" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>民族</td><td>用户的民族或种族背景</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="民族" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>居住地</td><td>用户目前居住的城市、地区或国家</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="居住地" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>年龄</td><td>用户的年龄</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="年龄" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>饮食习惯</td><td>用户是否有特定饮食偏好或限制（如素…</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="饮食习惯" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>人生理想/目标</td><td>用户的长远目标、梦想或人生规划</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="人生理想/目标" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>性别</td><td>用户的性别认同或自我表达</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="性别" data-deltype="画像字段">删除</button></td></tr>
+          <tr><td>年龄段</td><td>用户当前所处的年龄阶段（如小学生、…</td><td>-</td><td><button class="link" data-toast="原型未实现">编辑</button><button class="link" data-del="年龄段" data-deltype="画像字段">删除</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="d-foot">
+    <button class="btn btn-text" data-close>取消</button>
+    <button class="btn btn-primary" data-save="规则已保存（Mock）">确认</button>
+  </div>
+</aside>
+
+<!-- ================= 抽屉：整合任务详情 ================= -->
+<aside class="drawer" id="drawerTask">
+  <div class="d-head"><span class="d-title" id="taskTitle">任务详情</span>
+    <button class="d-close" data-close><i class="ico" data-ico="close"></i></button></div>
+  <div class="d-body" id="taskBody"></div>
+</aside>
+
+<!-- ================= 确认 Dialog ================= -->
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <div class="m-title" id="mTitle"></div>
+    <div class="m-body" id="mBody"></div>
+    <div class="m-foot">
+      <button class="btn btn-text" id="mCancel">取消</button>
+      <button class="btn btn-primary" id="mOk">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="ico" data-ico="check-c"></i><span id="toastText"></span></div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- 图标库 ---------- */
+var ICONS={
+  menu:'<svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+  spark:'<svg viewBox="0 0 24 24"><path d="M12 3l2.1 5.4L20 10.5l-5.9 2.1L12 18l-2.1-5.4L4 10.5l5.9-2.1z"/></svg>',
+  caret:'<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  down:'<svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  up:'<svg viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></svg>',
+  left:'<svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>',
+  flame:'<svg viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 2s5.5 4.6 5.5 9.5a5.5 5.5 0 0 1-11 0c0-1.9.9-3.6 2-5.2.4 1.9 1.6 2.6 1.6 2.6S9.6 5.4 12 2z"/></svg>',
+  'check-c':'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M8.5 12.2l2.4 2.4 4.6-4.8" stroke="#fff" stroke-width="2"/></svg>',
+  bell:'<svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10.3 21a2 2 0 0 0 3.4 0"/></svg>',
+  help:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.6 2.6 0 0 1 5 1c0 1.7-2.6 2.2-2.6 4"/><path d="M12 17.5h.01"/></svg>',
+  gear:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.9 1.9M16.6 16.6l1.9 1.9M18.5 5.5l-1.9 1.9M7.4 16.6l-1.9 1.9"/></svg>',
+  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 9.5V21h14V9.5"/></svg>',
+  db:'<svg viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v13c0 1.7 3.6 3 8 3s8-1.3 8-3v-13"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>',
+  trace:'<svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.5 6H15a3 3 0 0 1 3 3v6.5"/></svg>',
+  shield:'<svg viewBox="0 0 24 24"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg>',
+  link:'<svg viewBox="0 0 24 24"><path d="M10 14a4.5 4.5 0 0 0 6.4.4l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.7 1.7"/><path d="M14 10a4.5 4.5 0 0 0-6.4-.4l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.7-1.7"/></svg>',
+  chart:'<svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-8M21 20H3"/></svg>',
+  copy:'<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  doc:'<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
+  plus:'<svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  search:'<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  sync:'<svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12a9 9 0 0 1 15.5-6.2"/><path d="M21 3v6h-6M3 21v-6h6"/></svg>',
+  lines:'<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>',
+  clock:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  pencil:'<svg viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>',
+  trash:'<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>',
+  person:'<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg>',
+  wand:'<svg viewBox="0 0 24 24"><path d="M15 4V2M15 10V8M11.5 6h-2M20.5 6h-2M17.8 3.2l1.4-1.4M17.8 8.8l1.4 1.4M12.2 3.2l-1.4-1.4M12.2 8.8l-1.4 1.4"/><path d="M3 21l10-10"/></svg>',
+  cube:'<svg viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>',
+  layers:'<svg viewBox="0 0 24 24"><path d="M12 2l10 5.5L12 13 2 7.5z"/><path d="M2 12.5L12 18l10-5.5M2 17.5L12 23l10-5.5"/></svg>',
+  filter:'<svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>',
+  info:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',
+  close:'<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  monitor:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>',
+  speaker:'<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>',
+  merge:'<svg viewBox="0 0 24 24"><circle cx="6" cy="5" r="2.2"/><circle cx="6" cy="19" r="2.2"/><circle cx="18" cy="12" r="2.2"/><path d="M6 7.2v9.6M8.2 6l7.6 5M8.2 18l7.6-5"/></svg>',
+  infer:'<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 1 3.5 10.9c-.8.6-1 1.3-1 2.1h-5c0-.8-.2-1.5-1-2.1A6 6 0 0 1 12 3z"/></svg>',
+  invalid:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.5 5.5l13 13"/></svg>',
+  warn:'<svg viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5h.01"/></svg>'
+};
+document.querySelectorAll('[data-ico]').forEach(function(el){el.innerHTML=ICONS[el.getAttribute('data-ico')]||'';});
+
+/* ---------- 工具 ---------- */
+function $(s,c){return (c||document).querySelector(s);}
+function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s));}
+function esc(s){return String(s).replace(/[&<>"]/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch];});}
+var toastTimer=null;
+function toast(msg){
+  $('#toastText').textContent=msg;
+  var t=$('#toast');t.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},2200);
+}
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-toast]');
+  if(t){toast(t.getAttribute('data-toast'));}
+});
+
+/* ---------- Tab 切换 ---------- */
+$$('#tabs .tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    $$('#tabs .tab').forEach(function(x){x.classList.toggle('on',x===tab);});
+    $$('.tabpane').forEach(function(p){p.classList.toggle('on',p.id==='pane-'+tab.getAttribute('data-tab'));});
+  });
+});
+
+/* ---------- 规则组展开/收起 ---------- */
+$$('[data-collapse]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    document.getElementById(btn.getAttribute('data-collapse')).classList.toggle('closed');
+  });
+});
+$$('input[data-filter]').forEach(function(inp){
+  inp.addEventListener('input',function(){
+    var grp=document.getElementById(inp.getAttribute('data-filter'));
+    var kw=inp.value.trim();
+    $$('.rule-row',grp).forEach(function(row){
+      row.style.display=row.getAttribute('data-name').indexOf(kw)>-1?'':'none';
+    });
+  });
+});
+
+/* ---------- 抽屉 ---------- */
+var curDrawer=null;
+function openDrawer(id){curDrawer=document.getElementById(id);curDrawer.classList.add('show');$('#mask').classList.add('show');}
+function closeDrawer(){if(curDrawer){curDrawer.classList.remove('show');}$('#mask').classList.remove('show');curDrawer=null;}
+$$('[data-drawer]').forEach(function(b){b.addEventListener('click',function(){openDrawer(b.getAttribute('data-drawer'));});});
+$$('[data-close]').forEach(function(b){b.addEventListener('click',closeDrawer);});
+$('#mask').addEventListener('click',closeDrawer);
+$$('[data-save]').forEach(function(b){b.addEventListener('click',function(){toast(b.getAttribute('data-save'));closeDrawer();});});
+
+/* ---------- switch / 分段 / radio 卡 ---------- */
+document.addEventListener('click',function(e){
+  var sw=e.target.closest('[data-sw]');if(sw){sw.classList.toggle('on');}
+});
+$$('[data-seg]').forEach(function(seg){
+  $$('.seg-btn',seg).forEach(function(b){
+    b.addEventListener('click',function(){
+      $$('.seg-btn',seg).forEach(function(x){x.classList.toggle('on',x===b);});
+    });
+  });
+});
+$$('[data-rcgroup]').forEach(function(g){
+  $$('.rcard',g).forEach(function(c){
+    c.addEventListener('click',function(){
+      $$('.rcard',g).forEach(function(x){x.classList.toggle('sel',x===c);});
+    });
+  });
+});
+
+/* ---------- 字符计数 ---------- */
+$$('[data-count]').forEach(function(el){
+  var out=document.getElementById(el.getAttribute('data-count'));
+  var max=el.getAttribute('maxlength');
+  var upd=function(){out.textContent=el.value.length+' / '+max;};
+  el.addEventListener('input',upd);upd();
+});
+
+/* ---------- 下拉 ---------- */
+$$('.dd').forEach(function(dd){
+  $('.dd-btn',dd).addEventListener('click',function(e){
+    e.stopPropagation();
+    $$('.dd').forEach(function(x){if(x!==dd){x.classList.remove('open');}});
+    dd.classList.toggle('open');
+  });
+  $$('.dd-opt',dd).forEach(function(op){
+    op.addEventListener('click',function(){
+      $$('.dd-opt',dd).forEach(function(x){x.classList.toggle('sel',x===op);});
+      $('.dd-val',dd).textContent=op.getAttribute('data-v');
+      dd.classList.remove('open');
+    });
+  });
+});
+document.addEventListener('click',function(){$$('.dd').forEach(function(x){x.classList.remove('open');});});
+
+/* ---------- slider / 输入计数 ---------- */
+var rr=$('#recallRange'),rn=$('#recallNum');
+rr.addEventListener('input',function(){rn.value=rr.value;});
+rn.addEventListener('input',function(){
+  var v=Math.min(100,Math.max(1,parseInt(rn.value,10)||1));rn.value=v;rr.value=v;
+});
+var qi=$('#queryInput'),qc=$('#queryCount');
+qi.addEventListener('input',function(){qc.textContent=qi.value.length+' / 1024';});
+
+/* ---------- 检索：0.6s loading + 结果渲染 ---------- */
+var FACT_RESULTS=[
+  {content:'我住在广州天河区。',conf:0.96,scope:'通用个人',time:'2026-10-09 15:36'},
+  {content:'用户最喜欢吃广州的肠粉。',conf:0.95,scope:'通用个人',time:'2026-10-09 15:36'}
+];
+var SKILL_RESULTS=[
+  {content:'写项目周报时先写结论再列依据。',conf:0.91,scope:'通用个人',time:'2026-10-09 15:36'}
+];
+var searching=false;
+$('#searchBtn').addEventListener('click',function(){
+  if(searching){return;}
+  if(!qi.value.trim()){toast('请先输入检索内容');qi.focus();return;}
+  searching=true;
+  var btn=$('#searchBtn');
+  btn.classList.add('loading');
+  btn.innerHTML='<span class="spin"></span>检索中…';
+  setTimeout(function(){
+    btn.classList.remove('loading');
+    btn.textContent='检索';
+    searching=false;
+    renderResults();
+  },600);
+});
+function renderResults(){
+  var type=$('.dd-val',$('#ddType')).textContent;
+  var list=type==='技能记忆'?SKILL_RESULTS:FACT_RESULTS;
+  var limit=parseInt(rn.value,10)||1;
+  var shown=list.slice(0,limit);
+  $('#reqId').textContent='req_mock_8f3a21';
+  var q=esc(qi.value.trim());
+  var html='<div class="res-q">检索问题：「'+q+'」 · 记忆类型：'+esc(type)+' · 命中 '+shown.length+' 条</div>';
+  if(!shown.length){
+    html+='<div style="padding:60px 0"><div class="empty" style="position:static"><span class="e-ico"><i class="ico">'+ICONS.down+'</i></span>暂无数据</div></div>';
+  }
+  shown.forEach(function(r){
+    html+='<div class="res-card">'
+      +'<div class="rc-line">'+esc(r.content)+'</div>'
+      +'<div class="rc-meta">'
+      +'<span class="chip blue">'+esc(type)+'</span>'
+      +'<span class="chip purple">置信度 '+r.conf.toFixed(2)+'</span>'
+      +'<span class="chip gray">范围：'+esc(r.scope)+'</span>'
+      +'<span class="rc-time">更新时间 '+r.time+'</span>'
+      +'</div></div>';
+  });
+  $('#resBody').innerHTML=html;
+}
+$('#resRefresh').addEventListener('click',function(){
+  $('#reqId').textContent='--';
+  $('#resBody').innerHTML='<div class="empty"><span class="e-ico"><i class="ico">'+ICONS.down+'</i></span>暂无数据</div>';
+  toast('已重置检索结果');
+});
+
+/* ---------- Tab2 实体搜索 ---------- */
+$('#detailSearch').addEventListener('input',function(){
+  var kw=this.value.trim();
+  $$('#detailBody tr').forEach(function(tr){
+    tr.style.display=tr.getAttribute('data-eid').indexOf(kw)>-1?'':'none';
+  });
+});
+
+/* ---------- 治理策略 ---------- */
+var policyVer=1;
+$('#savePolicy').addEventListener('click',function(){
+  policyVer+=1;
+  $('#policyVersion').value=policyVer;
+  toast('策略已保存（version+1）');
+});
+
+/* ---------- 整合任务详情抽屉 ---------- */
+var TASKS={
+  tsk_consol_001:{user:'laowang-001',status:['succeeded','green'],trigger:'手动',time:'2026-10-09 15:40',token:'12,480 tokens',
+    ops:[{id:'op_1',kind:'merge',mem:'mem_0002',desc:'合并重复的肠粉偏好记忆'},
+         {id:'op_2',kind:'inference',mem:'mem_0007',desc:'由工位+工号推断：用户任职于广州移动联创中心'},
+         {id:'op_3',kind:'invalidation',mem:'mem_0001',desc:'旧居住地记忆被新事实取代'}]},
+  tsk_consol_002:{user:'laowang-001',status:['partial','orange'],trigger:'自动（达到变更阈值）',time:'2026-10-09 15:12',token:'8,120 tokens',
+    ops:[{id:'op_1',kind:'merge',mem:'mem_0002',desc:'合并重复的肠粉偏好记忆'}]},
+  tsk_consol_003:{user:'laowang-001',status:['processing','blue'],trigger:'自动',time:'2026-10-09 16:02',token:'3,260 tokens（进行中）',
+    ops:[{id:'op_1',kind:'merge',mem:'mem_0002',desc:'合并重复的肠粉偏好记忆'}]},
+  tsk_consol_004:{user:'laowang-001',status:['failed','red'],trigger:'手动',time:'2026-10-09 14:47',token:'0 tokens',
+    error:'embedding 服务超时',ops:[]}
+};
+var KIND={merge:['merge','合并','purple'],inference:['infer','推断','blue'],invalidation:['invalid','失效','gray']};
+$$('[data-task]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var t=TASKS[b.getAttribute('data-task')];
+    $('#taskTitle').textContent='任务详情：'+b.getAttribute('data-task');
+    var html='<div class="kv">'
+      +'<span class="k">任务 ID</span><span class="v mono">'+b.getAttribute('data-task')+'</span>'
+      +'<span class="k">用户</span><span class="v">'+t.user+'</span>'
+      +'<span class="k">状态</span><span class="v"><span class="chip '+t.status[1]+'"><span class="dot"></span>'+t.status[0]+'</span></span>'
+      +'<span class="k">触发方式</span><span class="v">'+t.trigger+'</span>'
+      +'<span class="k">创建时间</span><span class="v">'+t.time+'</span>'
+      +'<span class="k">Token 用量</span><span class="v">'+t.token+'</span>'
+      +'</div>';
+    if(t.error){html+='<div class="err-banner"><i class="ico">'+ICONS.warn+'</i><span>error: '+t.error+'</span></div>';}
+    html+='<div class="op-sec">操作记录（'+t.ops.length+'）</div>';
+    if(!t.ops.length){html+='<div class="group-empty" style="margin:0">暂无数据</div>';}
+    t.ops.forEach(function(op){
+      var k=KIND[op.kind];
+      html+='<div class="op-item">'
+        +'<div class="op-head"><span class="chip '+k[2]+'"><i class="ico">'+ICONS[k[0]]+'</i>'+k[1]+'</span>'
+        +'<span class="op-id">'+op.id+' · '+op.mem+'</span>'
+        +'<button class="btn btn-mini" data-rollback="'+op.id+'">回滚</button></div>'
+        +'<div class="op-desc">'+op.desc+'</div>'
+        +'</div>';
+    });
+    $('#taskBody').innerHTML=html;
+    openDrawer('drawerTask');
+  });
+});
+
+/* ---------- 确认 Dialog（回滚 / 删除） ---------- */
+var modalMode=null,modalCtx=null;
+function openModal(mode,ctx){
+  modalMode=mode;modalCtx=ctx;
+  var title=$('#mTitle'),body=$('#mBody'),ok=$('#mOk');
+  title.className='m-title danger';
+  if(mode==='rollback'){
+    title.innerHTML='<i class="ico">'+ICONS.warn+'</i>回滚操作确认';
+    body.innerHTML='将对操作 <b class="mono">'+ctx.op+'</b> 执行回滚，回滚后该操作产生的记忆变更将被撤销。请填写回滚原因（必填）：'
+      +'<textarea class="f-textarea" id="mReason" placeholder="请输入回滚原因，例如：合并错误，恢复原始记忆"></textarea>'
+      +'<div class="m-err" id="mErr">回滚原因必填</div>';
+    ok.textContent='提交回滚';ok.className='btn btn-danger';
+  }else{
+    title.innerHTML='<i class="ico">'+ICONS.warn+'</i>删除确认';
+    body.innerHTML='确定删除'+ctx.type+' <b>「'+esc(ctx.name)+'」</b> 吗？删除后不可恢复。';
+    ok.textContent='删除';ok.className='btn btn-danger';
+  }
+  $('#modalMask').classList.add('show');
+}
+function closeModal(){$('#modalMask').classList.remove('show');modalMode=null;modalCtx=null;}
+$('#mCancel').addEventListener('click',closeModal);
+$('#modalMask').addEventListener('click',function(e){if(e.target===this){closeModal();}});
+$('#mOk').addEventListener('click',function(){
+  if(modalMode==='rollback'){
+    var r=$('#mReason');
+    if(!r.value.trim()){$('#mErr').classList.add('show');r.focus();return;}
+    closeModal();toast('已提交回滚');
+  }else if(modalMode==='del'){
+    if(modalCtx.type==='规则'){
+      var row=modalCtx.row;
+      if(row){
+        var grp=row.closest('.group');
+        row.remove();
+        var cnt=$('.g-count',grp);
+        cnt.textContent=Math.max(0,parseInt(cnt.textContent,10)-1);
+        if(!$('.rule-row',grp)){$('.group-empty',grp)||grp.insertAdjacentHTML('beforeend','<div class="group-empty">暂无数据</div>');}
+      }
+    }else if(modalCtx.type==='画像字段'){
+      modalCtx.row.remove();
+    }
+    closeModal();toast('已删除（Mock）');
+  }
+});
+document.addEventListener('click',function(e){
+  var rb=e.target.closest('[data-rollback]');
+  if(rb){openModal('rollback',{op:rb.getAttribute('data-rollback')});return;}
+  var del=e.target.closest('[data-del]');
+  if(del){openModal('del',{name:del.getAttribute('data-del'),type:del.getAttribute('data-deltype'),row:del.closest('tr')||del.closest('.rule-row')});}
+});
+
+/* ---------- 复制记忆库 ID ---------- */
+$('#copyBtn').addEventListener('click',function(){
+  var id='lib_default_memory_001';
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(id).catch(function(){});}
+  toast('已复制记忆库 ID：'+id);
+});
+})();
+</script>
+</body>
+</html>

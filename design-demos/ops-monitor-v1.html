@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>记忆运营监控平台 · 企业蓝原型 v1（只读监控）</title>
+<style>
+:root{
+  --blue:#1664ff; --blue-deep:#0e4fd8; --blue-hov:#3d82ff;
+  --blue-bg:#eaf1ff; --blue-bd:#c6d9ff;
+  --bd:#d9dee8; --card-bd:#e3e8f0; --line:#eef1f6;
+  --bg:#f5f7fa; --thead:#f2f5fa;
+  --t1:#1f2733; --t2:#5a6472; --t3:#6b7688;
+  --ok:#15803d; --ok-bg:#e8f7ee; --ok-bd:#bfe6cd;
+  --wn:#b45309; --wn-bg:#fef3e6; --wn-bd:#f5d9b0;
+  --er:#dc2626; --er-bg:#fdecec; --er-bd:#f3c1c3;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;font-size:14px;line-height:1.6;color:var(--t1);background:var(--bg);-webkit-font-smoothing:antialiased}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.app{display:flex;flex-direction:column;height:100vh;min-width:1180px}
+/* ---------- 顶栏 ---------- */
+.top{height:52px;flex:none;background:#fff;border-bottom:1px solid var(--card-bd);display:flex;align-items:center;gap:12px;padding:0 20px}
+.logo{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#3d82ff,#0e4fd8);display:flex;align-items:center;justify-content:center;color:#fff;flex:none;box-shadow:0 2px 6px rgba(22,100,255,.3)}
+.logo svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.top .pname{font-size:15px;font-weight:700;letter-spacing:.2px}
+.top .pdiv{width:1px;height:18px;background:var(--card-bd)}
+.top .psub{font-size:12px;color:var(--t3)}
+.top .right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.envchip{font-size:12px;color:var(--t2);background:var(--thead);border:1px solid var(--card-bd);border-radius:4px;padding:1px 8px;display:inline-flex;align-items:center;gap:6px}
+.envchip .dot{width:6px;height:6px;border-radius:50%;background:#22c55e}
+.vtag{font-size:11px;color:var(--blue-deep);background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:4px;padding:0 6px;line-height:18px;font-weight:600}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#5a9bff,#0e4fd8);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;flex:none}
+.uname{font-size:13px;color:var(--t2)}
+/* ---------- 主体 ---------- */
+.body{flex:1;display:flex;min-height:0}
+aside{width:196px;flex:none;background:#fff;border-right:1px solid var(--card-bd);padding:10px 0;overflow:auto}
+.navlb{font-size:12px;color:var(--t3);padding:10px 20px 4px}
+.nav a{display:flex;align-items:center;gap:9px;padding:8px 14px 8px 17px;margin:2px 8px;border-radius:6px;font-size:13px;color:var(--t2);cursor:pointer;position:relative;text-decoration:none}
+.nav a:hover{background:#f2f5fa;color:var(--t1)}
+.nav a.on{background:var(--blue-bg);color:var(--blue-deep);font-weight:600}
+.nav a.on::before{content:'';position:absolute;left:-8px;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--blue)}
+.main{flex:1;min-width:0;overflow:auto;padding:16px 24px 48px}
+/* ---------- 内容头 ---------- */
+.chead{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.chead h1{font-size:18px;font-weight:700}
+.chead .sub{font-size:12px;color:var(--t3)}
+.chead .right{margin-left:auto;display:flex;gap:10px;align-items:center}
+/* ---------- 按钮 ---------- */
+.btn{height:32px;padding:0 14px;border-radius:6px;border:1px solid var(--bd);background:#fff;color:#333d4d;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:6px;transition:.15s}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.sm{height:28px;padding:0 10px;font-size:12px;border-radius:5px}
+.ibtn{width:28px;height:28px;border-radius:6px;border:1px solid transparent;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--t2);cursor:pointer;transition:.15s;flex:none}
+.ibtn:hover{background:var(--blue-bg);color:var(--blue)}
+.lk{color:var(--blue);cursor:pointer;font-size:13px}
+.lk:hover{text-decoration:underline;color:var(--blue-deep)}
+.panel{display:none}
+.panel.on{display:block}
+.card{background:#fff;border:1px solid var(--card-bd);border-radius:8px}
+.card .chd{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px;font-weight:700}
+.card .chd .note{margin-left:auto;font-size:12px;color:var(--t3);font-weight:400}
+/* ---------- 统计卡 ---------- */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:14px}
+.stat{background:#f7f9fc;border:1px solid var(--card-bd);border-radius:8px;padding:14px 16px;position:relative}
+.stat .lb{font-size:13px;color:var(--t2)}
+.stat .vl{font-size:26px;font-weight:700;margin-top:2px;color:var(--t1)}
+.stat .vl small{font-size:13px;color:var(--t3);font-weight:400;margin-left:4px}
+.stat .ic{position:absolute;right:14px;top:14px;width:32px;height:32px;border-radius:8px;background:var(--blue-bg);color:var(--blue);display:flex;align-items:center;justify-content:center}
+.stat.hi .vl{color:var(--blue-deep)}
+/* ---------- 漏斗 ---------- */
+.funnel{padding:18px 24px 14px}
+.fstage{margin:0 auto 4px;max-width:660px}
+.fbar{height:46px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;color:#fff;box-shadow:0 2px 8px rgba(22,100,255,.14)}
+.fbar .n{font-size:19px;font-weight:700}
+.fbar .n small{font-size:12px;font-weight:400;opacity:.85;margin-left:4px}
+.f1{background:linear-gradient(90deg,#8fb4ff,#5b8df6);width:100%}
+.f2{background:linear-gradient(90deg,#5b8df6,#3d74f0);width:74%}
+.f3{background:linear-gradient(90deg,#3d74f0,#2064e8);width:45%}
+.f4{background:linear-gradient(90deg,#2064e8,#0e4fd8);width:26%}
+.fcap{text-align:center;font-size:12px;color:var(--t3);margin:6px auto 10px;max-width:720px}
+.fcap b{color:var(--t2);font-weight:600}
+.fcap .lk-count{color:var(--wn);font-weight:600}
+.farrow{text-align:center;color:#b9c3d3;font-size:13px;line-height:1;margin:2px 0 4px}
+/* ---------- 原因分布 / 趋势 ---------- */
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.dist{padding:14px 16px}
+.drow{display:flex;align-items:center;gap:10px;margin-top:12px}
+.drow .dl{width:92px;font-size:12px;color:var(--t2);flex:none;text-align:right}
+.drow .dbar{flex:1;height:16px;background:#f2f5fa;border-radius:4px;overflow:hidden}
+.drow .dbar i{display:block;height:100%;border-radius:4px}
+.drow .dn{width:64px;font-size:13px;font-weight:700;color:var(--t1);flex:none}
+.drow .dp{width:44px;font-size:12px;color:var(--t3);flex:none}
+.b-gray{background:#cfd6e0}.b-blue{background:linear-gradient(90deg,#3d82ff,#0e4fd8)}.b-er{background:linear-gradient(90deg,#f87171,#dc2626)}.b-wn{background:linear-gradient(90deg,#fbbf77,#d97706)}
+.legend{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--t3)}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:5px;vertical-align:-1px}
+/* ---------- 筛选 chips ---------- */
+.ftools{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.fchips{display:flex;gap:8px;flex-wrap:wrap}
+.fchip{height:28px;padding:0 12px;border-radius:999px;background:#e9edf3;border:1px solid transparent;color:var(--t2);font-size:12px;cursor:pointer;transition:.15s;display:inline-flex;align-items:center;gap:6px}
+.fchip b{font-weight:600}
+.fchip:hover{color:var(--blue)}
+.fchip.on{background:var(--blue);color:#fff}
+.searchbox{position:relative;margin-left:auto}
+.searchbox svg{position:absolute;left:9px;top:8px;color:var(--t3)}
+.searchbox input{height:30px;width:220px;border:1px solid var(--bd);border-radius:6px;padding:0 10px 0 29px;font-size:12px;color:var(--t1);background:#fff}
+.searchbox input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(22,100,255,.12)}
+/* ---------- 表格 ---------- */
+.tblwrap{overflow:auto}
+table.tbl{width:100%;border-collapse:collapse}
+.tbl th{background:var(--thead);text-align:left;font-size:13px;color:var(--t2);font-weight:600;padding:9px 12px;border-bottom:1px solid var(--card-bd);white-space:nowrap}
+.tbl td{padding:9px 12px;font-size:13px;border-bottom:1px solid var(--line);color:var(--t1);white-space:nowrap}
+.tbl tbody tr{transition:background .12s;cursor:pointer}
+.tbl tbody tr:hover{background:#f5f8ff}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr.hide{display:none}
+.tbl .clip{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.mono{font-family:Consolas,"SF Mono",Menlo,monospace;font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;height:22px;padding:0 9px;border-radius:4px;font-size:12px;border:1px solid;white-space:nowrap}
+.chip .dot{width:6px;height:6px;border-radius:50%;flex:none}
+.chip.ok{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-bd)} .chip.ok .dot{background:var(--ok)}
+.chip.warn{color:var(--wn);background:var(--wn-bg);border-color:var(--wn-bd)} .chip.warn .dot{background:var(--wn)}
+.chip.run{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)} .chip.run .dot{background:var(--blue)}
+.chip.err{color:var(--er);background:var(--er-bg);border-color:var(--er-bd)} .chip.err .dot{background:var(--er)}
+.chip.gray{color:var(--t2);background:var(--thead);border-color:var(--card-bd)}
+.tag{font-size:12px;line-height:18px;color:var(--t2);background:var(--thead);border:1px solid var(--card-bd);border-radius:4px;padding:0 8px;display:inline-flex;gap:5px;align-items:center}
+.tag.blue{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)}
+.tag.inf{color:#5b21b6;background:#f3efff;border-color:#ddd0fb}
+.tag.pro{color:#fff;background:linear-gradient(135deg,#3d82ff,#0e4fd8);border:none;font-weight:600}
+.minibar{width:64px;height:5px;border-radius:3px;background:#e9edf3;overflow:hidden;display:inline-block;vertical-align:2px;margin-left:6px}
+.minibar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,#3d82ff,#0e4fd8)}
+.nomatch{display:none;color:var(--t3);font-size:12px;padding:18px 4px;text-align:center}
+.tfoot{padding:10px 16px;font-size:12px;color:var(--t3);border-top:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.tfoot .right{margin-left:auto}
+/* ---------- 抽屉 ---------- */
+.mask{position:fixed;inset:0;background:rgba(15,23,42,.45);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+.mask.on{opacity:1;pointer-events:auto}
+.dw{position:fixed;top:0;right:0;bottom:0;background:#fff;z-index:50;box-shadow:-8px 0 24px rgba(15,23,42,.14);transform:translateX(102%);transition:transform .28s ease;display:flex;flex-direction:column;max-width:94vw}
+.dw.on{transform:none}
+#dwSrc{width:660px} #dwMem{width:620px}
+.dw-head{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--card-bd);font-size:15px;font-weight:700;flex:none}
+.dw-head .mono{color:var(--t2)}
+.dw-head .ibtn{margin-left:auto}
+.dw-body{flex:1;overflow:auto;padding:18px 22px}
+.sect{font-size:13px;font-weight:700;margin:18px 0 8px;display:flex;align-items:center;gap:8px}
+.sect:first-child{margin-top:0}
+.quote{background:#f7f9fc;border-left:3px solid var(--blue);border-radius:0 6px 6px 0;padding:10px 14px;font-size:14px;color:var(--t1)}
+.quote .qmeta{font-size:12px;color:var(--t3);margin-top:6px;display:flex;gap:14px;flex-wrap:wrap}
+.ov{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.ov .cell{background:#f7f9fc;border:1px solid var(--card-bd);border-radius:6px;padding:8px 12px;font-size:13px}
+.ov .cell .k{color:var(--t3);font-size:12px}
+.ov .cell .v{font-weight:600;margin-top:1px}
+/* 时间线 */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:'';position:absolute;left:8px;top:6px;bottom:6px;width:1px;background:var(--card-bd)}
+.tstep{position:relative;margin-bottom:16px}
+.tstep::before{content:'';position:absolute;left:-22px;top:4px;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid var(--blue)}
+.tstep.err::before{border-color:var(--er)}
+.tstep.off::before{border-color:#c3ccd8}
+.tstep .tt{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tstep .td{font-size:12px;color:var(--t3);margin-top:2px}
+.tstep .tb{margin-top:8px}
+/* 候选卡 */
+.cand{border:1px solid var(--card-bd);border-radius:6px;padding:10px 12px;margin-top:8px;background:#fff;transition:.15s}
+.cand:hover{border-color:var(--blue-bd)}
+.cand .chd{display:flex;align-items:center;gap:8px;font-size:13px}
+.cand .ct{font-size:13.5px;margin:7px 0 5px;color:var(--t1)}
+.cand .cft{font-size:12px;color:var(--t3);display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.disp{font-size:11px;line-height:18px;border-radius:4px;padding:0 6px;border:1px solid;font-weight:600;flex:none}
+.disp.in{color:var(--ok);background:var(--ok-bg);border-color:var(--ok-bd)}
+.disp.mg{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)}
+.disp.lo{color:var(--wn);background:var(--wn-bg);border-color:var(--wn-bd)}
+.disp.no{color:var(--t2);background:var(--thead);border-color:var(--card-bd)}
+.note-er{background:var(--er-bg);border:1px solid var(--er-bd);color:var(--er);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px}
+.note-blue{background:var(--blue-bg);border:1px solid var(--blue-bd);color:var(--blue-deep);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px}
+.audit{border:1px solid var(--card-bd);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:12.5px;display:flex;gap:10px;align-items:center;background:#fff}
+.audit .mono{color:var(--t2)}
+.audit .at{margin-left:auto;color:var(--t3);font-size:12px;flex:none}
+/* toast / mock */
+.toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-10px);background:#fff;border:1px solid var(--card-bd);border-left:3px solid var(--blue);box-shadow:0 6px 20px rgba(15,23,42,.14);border-radius:6px;padding:9px 16px;font-size:13px;color:var(--t1);z-index:80;opacity:0;pointer-events:none;transition:.25s;display:flex;gap:8px;align-items:center;max-width:70vw}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.toast svg{color:var(--blue)}
+.mock{position:fixed;right:12px;bottom:12px;font-size:11px;color:var(--t3);background:#fff;border:1px solid var(--card-bd);border-radius:4px;padding:2px 8px;z-index:30;letter-spacing:.3px}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- 顶栏 -->
+  <header class="top">
+    <div class="logo"><svg viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg></div>
+    <span class="pname">广州移动联创中心 · 记忆运营监控平台</span>
+    <span class="pdiv"></span>
+    <span class="psub">GeneralMemory-2.1.0（MemoryCMIC）· 只读直连 GM Postgres :5433</span>
+    <div class="right">
+      <span class="vtag">原型 v1</span>
+      <span class="envchip"><span class="dot"></span>数据源：GM 库只读</span>
+      <span class="uname">记忆运营管理员</span>
+      <span class="avatar">运</span>
+    </div>
+  </header>
+
+  <div class="body">
+    <!-- 左栏 -->
+    <aside>
+      <div class="navlb">运营监控</div>
+      <nav class="nav">
+        <a class="on" data-page="overview"><svg class="i" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="9" y="2.5" width="4.5" height="4.5" rx="1"/><rect x="2.5" y="9" width="4.5" height="4.5" rx="1"/><rect x="9" y="9" width="4.5" height="4.5" rx="1"/></svg>概览统计</a>
+        <a data-page="intake"><svg class="i" viewBox="0 0 16 16"><path d="M2.5 3.5h11l-4 5v4l-3 1v-5z"/></svg>纳入明细</a>
+        <a data-page="list"><svg class="i" viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg>记忆清单</a>
+      </nav>
+    </aside>
+
+    <!-- 主区 -->
+    <div class="main">
+
+      <!-- ============ 页1 概览统计 ============ -->
+      <section class="panel on" id="page-overview">
+        <div class="chead">
+          <h1>概览统计</h1>
+          <span class="sub">口径：纳入率 = 实际入库 ÷ 写入保存次数 · 统计范围：近 7 日 · 租户 cmic-yun</span>
+          <div class="right">
+            <button class="btn sm" data-toast="已刷新（原型为静态 Mock 数据）"><svg class="i" style="width:13px;height:13px" viewBox="0 0 16 16"><path d="M13 8a5 5 0 1 1-1.8-3.8"/><path d="M13 2.5V5h-2.5"/></svg>刷新</button>
+            <span class="sub">最后更新：2026-10-10 09:30</span>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><div class="lb">写入保存次数</div><div class="vl">31<small>source_record</small></div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg></span></div>
+          <div class="stat"><div class="lb">抽取候选</div><div class="vl">14<small>模型产出</small></div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M2.5 5.5l5.5-3 5.5 3v5l-5.5 3-5.5-3z"/><path d="M2.5 5.5l5.5 3 5.5-3M8 8.5v5"/></svg></span></div>
+          <div class="stat"><div class="lb">实际入库</div><div class="vl">6<small>memory_item</small></div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg></span></div>
+          <div class="stat hi"><div class="lb">记忆纳入率</div><div class="vl">19.4%<small>6 / 31</small></div><span class="ic"><svg class="i" viewBox="0 0 16 16"><path d="M3 13.5h10"/><path d="M5 13.5V9.5M8 13.5V6.5M11 13.5V4.5"/></svg></span></div>
+          <div class="stat"><div class="lb">记忆实体</div><div class="vl">1<small>gm_user_lw</small></div><span class="ic"><svg class="i" viewBox="0 0 16 16"><circle cx="8" cy="5.5" r="2.5"/><path d="M3.5 13.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/></svg></span></div>
+        </div>
+
+        <!-- 漏斗 -->
+        <div class="card">
+          <div class="chd">
+            <svg class="i" style="color:var(--blue)" viewBox="0 0 16 16"><path d="M2 3.5h12l-4.5 5.2v3.8L6.5 14V8.7z"/></svg>
+            记忆纳入漏斗（近 7 日）
+            <span class="note">每一环节的流失原因均可下钻至「纳入明细」</span>
+          </div>
+          <div class="funnel">
+            <div class="fstage"><div class="fbar f1"><span>对话轮次（助手侧提交）</span><span class="n">42<small>轮</small></span></div>
+              <div class="fcap">其中 <span class="lk-count">11 轮</span>未触发保存（寒暄 / 纯工具调用，无候选内容）</div>
+            </div>
+            <div class="farrow">▼</div>
+            <div class="fstage"><div class="fbar f2"><span>写入保存（source_record）</span><span class="n">31<small>条</small></span></div>
+              <div class="fcap">转化 <b>73.8%</b> · 流失 11 轮见上 · 保存后其中 <span class="lk-count">17 条</span>未产出候选：无可抽取内容 <b>14</b> · 范围未解析 <b>3</b></div>
+            </div>
+            <div class="farrow">▼</div>
+            <div class="fstage"><div class="fbar f3"><span>模型抽取候选</span><span class="n">14<small>条</small></span></div>
+              <div class="fcap">转化 <b>45.2%</b> · 候选中 <span class="lk-count">8 条</span>未成为新记忆：与既有记忆重复合并 <b>6</b> · 低置信度过滤 <b>2</b></div>
+            </div>
+            <div class="farrow">▼</div>
+            <div class="fstage"><div class="fbar f4"><span>实际入库</span><span class="n">6<small>条</small></span></div>
+              <div class="fcap">memory_item 表 · 转化 <b>42.9%</b> · 整体纳入率 <b>19.4%</b>（6 / 31）</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 原因分布 + 趋势 -->
+        <div class="dgrid">
+          <div class="card">
+            <div class="chd">
+              <svg class="i" style="color:var(--blue)" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg>
+              未纳入原因分布（保存 31 条中未入库 25 条）
+            </div>
+            <div class="dist">
+              <div class="drow"><span class="dl">无可抽取内容</span><span class="dbar"><i class="b-gray" style="width:56%"></i></span><span class="dn">14</span><span class="dp">45.2%</span></div>
+              <div class="drow"><span class="dl">重复合并</span><span class="dbar"><i class="b-blue" style="width:24%"></i></span><span class="dn">6</span><span class="dp">19.4%</span></div>
+              <div class="drow"><span class="dl">范围未解析</span><span class="dbar"><i class="b-er" style="width:12%"></i></span><span class="dn">3</span><span class="dp">9.7%</span></div>
+              <div class="drow"><span class="dl">低置信度</span><span class="dbar"><i class="b-wn" style="width:8%"></i></span><span class="dn">2</span><span class="dp">6.5%</span></div>
+              <div style="font-size:12px;color:var(--t3);margin-top:14px">范围未解析 = SCOPE_UNRESOLVED（未匹配 business_scene），点击「纳入明细」可查看具体条目</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="chd">
+              <svg class="i" style="color:var(--blue)" viewBox="0 0 16 16"><path d="M3 13.5h10"/><path d="M5 13.5V9.5M8 13.5V6.5M11 13.5V4.5"/></svg>
+              近 7 日纳入趋势
+              <span class="note legend"><span><i style="background:#a8c3ff"></i>写入保存</span><span><i style="background:#0e4fd8"></i>实际入库</span></span>
+            </div>
+            <div class="dist">
+              <svg viewBox="0 0 520 190" style="width:100%;height:auto;display:block">
+                <line x1="34" y1="10" x2="34" y2="160" stroke="#e3e8f0"/>
+                <line x1="34" y1="160" x2="512" y2="160" stroke="#e3e8f0"/>
+                <text x="30" y="163" font-size="10" fill="#6b7688" text-anchor="end">0</text>
+                <text x="30" y="42" font-size="10" fill="#6b7688" text-anchor="end">12</text>
+                <line x1="34" y1="38" x2="512" y2="38" stroke="#eef1f6" stroke-dasharray="3 3"/>
+                <!-- 10-04: 2/0 -->
+                <rect x="52" y="134" width="24" height="26" rx="2" fill="#a8c3ff"/><rect x="80" y="160" width="24" height="0" rx="2" fill="#0e4fd8"/>
+                <text x="78" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-04</text>
+                <!-- 10-05: 3/1 -->
+                <rect x="118" y="121" width="24" height="39" rx="2" fill="#a8c3ff"/><rect x="146" y="147" width="24" height="13" rx="2" fill="#0e4fd8"/>
+                <text x="144" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-05</text>
+                <!-- 10-06: 1/0 -->
+                <rect x="184" y="147" width="24" height="13" rx="2" fill="#a8c3ff"/><rect x="212" y="160" width="24" height="0" rx="2" fill="#0e4fd8"/>
+                <text x="212" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-06</text>
+                <!-- 10-07: 5/1 -->
+                <rect x="250" y="95" width="24" height="65" rx="2" fill="#a8c3ff"/><rect x="278" y="147" width="24" height="13" rx="2" fill="#0e4fd8"/>
+                <text x="278" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-07</text>
+                <!-- 10-08: 8/1 -->
+                <rect x="316" y="56" width="24" height="104" rx="2" fill="#a8c3ff"/><rect x="344" y="147" width="24" height="13" rx="2" fill="#0e4fd8"/>
+                <text x="344" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-08</text>
+                <!-- 10-09: 9/3 -->
+                <rect x="382" y="43" width="24" height="117" rx="2" fill="#a8c3ff"/><rect x="410" y="121" width="24" height="39" rx="2" fill="#0e4fd8"/>
+                <text x="410" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-09</text>
+                <!-- 10-10: 3/0 -->
+                <rect x="448" y="121" width="24" height="39" rx="2" fill="#a8c3ff"/><rect x="476" y="160" width="24" height="0" rx="2" fill="#0e4fd8"/>
+                <text x="475" y="175" font-size="10" fill="#6b7688" text-anchor="middle">10-10</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 页2 纳入明细 ============ -->
+      <section class="panel" id="page-intake">
+        <div class="chead">
+          <h1>纳入明细</h1>
+          <span class="sub">每次写入保存的抽取过程：原文 → 范围解析 → 模型抽取 → 治理判定 → 入库 · 点击行查看「怎么抽出来的」</span>
+        </div>
+        <div class="ftools">
+          <div class="fchips" id="intakeChips">
+            <button class="fchip on" data-f="all">全部 <b>31</b></button>
+            <button class="fchip" data-f="ok">已纳入 <b>6</b></button>
+            <button class="fchip" data-f="mg">重复合并 <b>6</b></button>
+            <button class="fchip" data-f="none">无可抽取 <b>14</b></button>
+            <button class="fchip" data-f="scope">范围未解析 <b>3</b></button>
+            <button class="fchip" data-f="low">低置信度 <b>2</b></button>
+          </div>
+          <span class="searchbox"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg><input id="intakeSearch" placeholder="搜索原文内容 / source ID"></span>
+        </div>
+        <div class="card tblwrap">
+          <table class="tbl" id="intakeTbl">
+            <thead><tr>
+              <th>时间</th><th>来源 ID</th><th>实体</th><th>原始内容</th><th>范围解析</th><th>候选</th><th>入库</th><th>纳入结果</th><th>操作</th>
+            </tr></thead>
+            <tbody>
+              <tr data-src="src_0031" data-res="mg" data-txt="我还是很喜欢波斯猫它们太可爱了雪球 src_0031">
+                <td>10-10 09:12</td><td class="mono">src_0031</td><td class="mono">gm_user_lw</td>
+                <td class="clip">我还是很喜欢波斯猫，它们太可爱了</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>1</td><td>0</td>
+                <td><span class="chip run"><span class="dot"></span>重复合并</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0030" data-res="none" data-txt="嗯好的我知道了 src_0030">
+                <td>10-10 09:05</td><td class="mono">src_0030</td><td class="mono">gm_user_lw</td>
+                <td class="clip">嗯，好的，我知道了</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>0</td><td>0</td>
+                <td><span class="chip gray"><span class="dot"></span>无可抽取</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0029" data-res="scope" data-txt="帮我查一下明天广州的天气 src_0029">
+                <td>10-10 08:47</td><td class="mono">src_0029</td><td class="mono">gm_user_lw</td>
+                <td class="clip">帮我查一下明天广州的天气</td>
+                <td><span class="chip err"><span class="dot"></span>SCOPE_UNRESOLVED</span></td>
+                <td>0</td><td>0</td>
+                <td><span class="chip err"><span class="dot"></span>范围未解析</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0028" data-res="ok" data-txt="我最近心情不好连听我偶像小王的歌都没法开心 src_0028">
+                <td>10-09 15:36</td><td class="mono">src_0028</td><td class="mono">gm_user_lw</td>
+                <td class="clip">我最近心情不好，连听我偶像小王的歌都没法开心</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>1</td><td>1</td>
+                <td><span class="chip ok"><span class="dot"></span>已纳入</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0027" data-res="ok" data-txt="我在广州移动联创中心工作平时做ai智能体开发 src_0027">
+                <td>10-09 15:20</td><td class="mono">src_0027</td><td class="mono">gm_user_lw</td>
+                <td class="clip">我在广州移动联创中心工作，平时做 AI 智能体开发</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>2</td><td>2</td>
+                <td><span class="chip ok"><span class="dot"></span>已纳入</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0026" data-res="scope" data-txt="明天下午3点提醒我开会 src_0026">
+                <td>10-09 11:02</td><td class="mono">src_0026</td><td class="mono">gm_user_lw</td>
+                <td class="clip">明天下午3点提醒我开会</td>
+                <td><span class="chip err"><span class="dot"></span>SCOPE_UNRESOLVED</span></td>
+                <td>0</td><td>0</td>
+                <td><span class="chip err"><span class="dot"></span>范围未解析</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0025" data-res="low" data-txt="我觉得可能大概也许差不多是这样吧 src_0025">
+                <td>10-09 10:05</td><td class="mono">src_0025</td><td class="mono">gm_user_lw</td>
+                <td class="clip">我觉得可能大概也许差不多是这样吧</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>1</td><td>0</td>
+                <td><span class="chip warn"><span class="dot"></span>低置信度</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0019" data-res="ok" data-txt="记住我最喜欢吃年糕了是真的好吃 src_0019">
+                <td>10-08 16:44</td><td class="mono">src_0019</td><td class="mono">gm_user_lw</td>
+                <td class="clip">记住：我最喜欢吃年糕了，是真的好吃</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>1</td><td>1</td>
+                <td><span class="chip ok"><span class="dot"></span>已纳入</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0017" data-res="none" data-txt="今天天气不错心情挺好的 src_0017">
+                <td>10-08 15:30</td><td class="mono">src_0017</td><td class="mono">gm_user_lw</td>
+                <td class="clip">今天天气不错，心情挺好的</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>0</td><td>0</td>
+                <td><span class="chip gray"><span class="dot"></span>无可抽取</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+              <tr data-src="src_0009" data-res="ok" data-txt="我喜欢波斯猫我家养了一只叫雪球 src_0009">
+                <td>10-07 14:12</td><td class="mono">src_0009</td><td class="mono">gm_user_lw</td>
+                <td class="clip">我喜欢波斯猫，我家养了一只叫雪球</td>
+                <td><span class="chip run"><span class="dot"></span>已匹配</span></td>
+                <td>2</td><td>2</td>
+                <td><span class="chip ok"><span class="dot"></span>已纳入</span></td>
+                <td><span class="lk">抽取过程</span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="nomatch" id="intakeNomatch">无匹配记录</div>
+          <div class="tfoot">
+            <span>展示最近 10 条（共 31 条 source_record）</span>
+            <span class="right">口径：入库数含合并替代产生的新版本；SCOPE_UNRESOLVED 为范围未解析（未匹配 business_scene）</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 页3 记忆清单 ============ -->
+      <section class="panel" id="page-list">
+        <div class="chead">
+          <h1>记忆清单</h1>
+          <span class="sub">memory_item 全量 · 实体 <b class="mono" style="font-weight:600">gm_user_lw</b>（老王 · user）· 点击行查看记忆详情与来源追溯</span>
+        </div>
+        <div class="ftools">
+          <div class="fchips" id="listChips">
+            <button class="fchip on" data-f="all">全部 <b>6</b></button>
+            <button class="fchip" data-f="fact">事实 <b>5</b></button>
+            <button class="fchip" data-f="inf">推断 <b>1</b></button>
+            <button class="fchip" data-f="skill">技能 <b>0</b></button>
+          </div>
+          <span class="searchbox"><svg class="i" viewBox="0 0 16 16"><circle cx="7" cy="7" r="4"/><path d="M10.2 10.2l3.3 3.3"/></svg><input id="listSearch" placeholder="搜索记忆内容 / memory ID"></span>
+        </div>
+        <div class="card tblwrap">
+          <table class="tbl" id="memTbl">
+            <thead><tr>
+              <th>记忆 ID</th><th>内容</th><th>类型</th><th>置信度</th><th>状态</th><th>版本</th><th>来源</th><th>创建时间</th><th>操作</th>
+            </tr></thead>
+            <tbody id="memBody"><!-- JS 渲染 --></tbody>
+          </table>
+          <div class="nomatch" id="memNomatch">无匹配记忆</div>
+          <div class="tfoot">
+            <span>共 6 条 memory_item · 全部 active</span>
+            <span class="right">推断（cognitive_type=inference）按产品决策并入事实记忆展示，以紫色角标区分</span>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- 遮罩 + 抽屉：抽取过程 -->
+<div class="mask" id="mask"></div>
+<div class="dw" id="dwSrc">
+  <div class="dw-head">
+    <svg class="i" style="color:var(--blue)" viewBox="0 0 16 16"><path d="M5 2.5h4l2.5 2.5v8.5H5z"/><path d="M6.5 8h3M6.5 10.5h3"/></svg>
+    抽取过程 · <span class="mono" id="srcId">--</span>
+    <button class="ibtn" data-close title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  </div>
+  <div class="dw-body" id="srcBody"></div>
+</div>
+
+<!-- 抽屉：记忆详情 -->
+<div class="dw" id="dwMem">
+  <div class="dw-head">
+    <svg class="i" style="color:var(--blue)" viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg>
+    记忆详情 · <span class="mono" id="memId">--</span>
+    <button class="ibtn" data-close title="关闭"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button>
+  </div>
+  <div class="dw-body" id="memBodyDw"></div>
+</div>
+
+<div class="toast" id="toast"><svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3 3 7-7"/></svg><span id="toastMsg"></span></div>
+<div class="mock">原型 Mock 数据 · 正式版由只读 BFF 直连 GM Postgres</div>
+
+<script>
+function $(s,c){return (c||document).querySelector(s)}
+function $$(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))}
+
+/* ================= 记忆数据 ================= */
+var MEMS=[
+ {id:'mem_0001',c:'用户名叫老王。',t:'fact',conf:.98,v:1,st:'active',src:'src_0003',created:'2026-10-05 15:02',quote:'用户：我叫老王，以后就这么叫我吧。'},
+ {id:'mem_0002',c:'用户喜欢波斯猫，家中养了一只名叫"雪球"的猫。',t:'fact',conf:.92,v:2,st:'active',src:'src_0009',created:'2026-10-07 14:12',quote:'我喜欢波斯猫，我家养了一只叫雪球'},
+ {id:'mem_0003',c:'用户最喜欢吃年糕。',t:'fact',conf:.95,v:1,st:'active',src:'src_0019',created:'2026-10-08 16:44',quote:'记住：我最喜欢吃年糕了，是真的好吃'},
+ {id:'mem_0004',c:'用户最近心情不好，听偶像小王的歌也无法开心。',t:'fact',conf:.88,v:1,st:'active',src:'src_0028',created:'2026-10-09 15:36',quote:'我最近心情不好，连听我偶像小王的歌都没法开心'},
+ {id:'mem_0005',c:'用户任职于广州移动联创中心。',t:'inf',conf:.86,v:1,st:'active',src:'src_0027',created:'2026-10-09 15:21',quote:'我在广州移动联创中心工作，平时做 AI 智能体开发'},
+ {id:'mem_0006',c:'用户从事 AI 智能体开发工作。',t:'fact',conf:.90,v:1,st:'active',src:'src_0027',created:'2026-10-09 15:21',quote:'我在广州移动联创中心工作，平时做 AI 智能体开发'}
+];
+var TYPE_LABEL={fact:'事实',inf:'推断',skill:'技能'};
+
+/* ================= 抽取过程数据 ================= */
+var SRC={
+ src_0031:{
+  id:'src_0031',time:'2026-10-10 09:12',ent:'gm_user_lw',chan:'ai-assistant（回合钩子 · 异步批量）',
+  quote:'我还是很喜欢波斯猫，它们太可爱了',
+  scope:{ok:true,name:'日常闲聊 · user_preference'},
+  extract:{model:'qwen-plus',dur:'2.1s',tokens:'in 486 / out 132',
+   cands:[{c:'用户喜欢波斯猫。',t:'fact',conf:.91,disp:'mg',dnote:'与 mem_0002 相似度 0.93 ≥ 去重阈值 0.85，判定重复',dtxt:'合并 → mem_0002（版本 v1 保持）'}]},
+  gov:'去重检查：命中 1 条（mem_0002，余弦 0.93）；冲突检查：无',
+  result:{ok:false,chip:'mg',label:'未新增 · 并入既有记忆',note:'该候选与既有事实记忆语义重复，按治理策略合并，不产生新 memory_item。'}
+ },
+ src_0028:{
+  id:'src_0028',time:'2026-10-09 15:36',ent:'gm_user_lw',chan:'ai-assistant（回合钩子 · 异步批量）',
+  quote:'我最近心情不好，连听我偶像小王的歌都没法开心',
+  scope:{ok:true,name:'日常闲聊 · user_state'},
+  extract:{model:'qwen-plus',dur:'2.6s',tokens:'in 534 / out 148',
+   cands:[{c:'用户最近心情不好，听偶像小王的歌也无法开心。',t:'fact',conf:.88,disp:'in',dnote:'0.88 ≥ 入库阈值 0.5，与既有记忆相似度 0.31 < 0.85',dtxt:'入库 → mem_0004'}]},
+  gov:'去重检查：最高相似度 0.31，未命中；冲突检查：无同主题版本',
+  result:{ok:true,chip:'ok',label:'已纳入 1 条',note:'新增 memory_item：mem_0004（active · v1）。'}
+ },
+ src_0029:{
+  id:'src_0029',time:'2026-10-10 08:47',ent:'gm_user_lw',chan:'ai-assistant（回合钩子 · 异步批量）',
+  quote:'帮我查一下明天广州的天气',
+  scope:{ok:false,err:'SCOPE_UNRESOLVED',detail:'内容未匹配任何 business_scene（现有场景：闲聊陪伴/任务助手/知识问答/偏好收集），不进入抽取管线'},
+  extract:null,
+  gov:null,
+  result:{ok:false,chip:'err',label:'未纳入 · 范围未解析',note:'工具类指令不属于记忆收集范围，属正常拦截；若判定为误拦，需在 GM business_scene 中补充场景词条（管理平台任务5的配置能力）。'}
+ },
+ src_0027:{
+  id:'src_0027',time:'2026-10-09 15:20',ent:'gm_user_lw',chan:'ai-assistant（回合钩子 · 异步批量）',
+  quote:'我在广州移动联创中心工作，平时做 AI 智能体开发',
+  scope:{ok:true,name:'日常闲聊 · user_profile'},
+  extract:{model:'qwen-plus',dur:'2.9s',tokens:'in 571 / out 205',
+   cands:[
+    {c:'用户任职于广州移动联创中心。',t:'inf',conf:.86,disp:'in',dnote:'由"在…工作"推断产生（cognitive_type=inference）',dtxt:'入库 → mem_0005'},
+    {c:'用户从事 AI 智能体开发工作。',t:'fact',conf:.90,disp:'in',dnote:'0.90 ≥ 0.5，无重复',dtxt:'入库 → mem_0006'}]},
+  gov:'去重检查：无命中；冲突检查：无同主题版本',
+  result:{ok:true,chip:'ok',label:'已纳入 2 条',note:'新增 memory_item：mem_0005（推断 · 紫色角标）+ mem_0006（事实）。'}
+ }
+};
+
+/* ================= 渲染：记忆清单 ================= */
+function memRow(m){
+  var tcls=m.t==='inf'?'tag inf':(m.t==='skill'?'tag':'tag blue');
+  return '<tr data-mem="'+m.id+'" data-t="'+m.t+'" data-txt="'+m.c+' '+m.id+'">'
+   +'<td class="mono">'+m.id+'</td>'
+   +'<td class="clip" style="max-width:320px">'+m.c+'</td>'
+   +'<td><span class="'+tcls+'">'+TYPE_LABEL[m.t]+'</span></td>'
+   +'<td>'+m.conf.toFixed(2)+'<span class="minibar"><i style="width:'+(m.conf*100)+'%"></i></span></td>'
+   +'<td><span class="chip ok"><span class="dot"></span>'+m.st+'</span></td>'
+   +'<td>v'+m.v+'</td>'
+   +'<td><span class="mono" style="color:var(--blue)">'+m.src+'</span></td>'
+   +'<td>'+m.created+'</td>'
+   +'<td><span class="lk">详情</span></td></tr>';
+}
+$('#memBody').innerHTML=MEMS.map(memRow).join('');
+
+/* ================= 抽屉：抽取过程 ================= */
+function candHtml(cd){
+  var D={in:['in','入库'],mg:['mg','合并'],lo:['lo','过滤'],no:['no','未执行']};
+  var d=D[cd.disp];
+  return '<div class="cand"><div class="chd">'
+   +'<span class="'+(cd.t==='inf'?'tag inf':'tag blue')+'">'+TYPE_LABEL[cd.t]+'</span>'
+   +'<span class="disp '+d[0]+'">'+d[1]+'</span>'
+   +'<span style="margin-left:auto;font-size:13px;font-weight:700;color:var(--blue-deep)">'+cd.conf.toFixed(2)+'<span class="minibar" style="width:56px"><i style="width:'+(cd.conf*100)+'%"></i></span></span></div>'
+   +'<div class="ct">'+cd.c+'</div>'
+   +'<div class="cft"><span>'+cd.dnote+'</span><span style="margin-left:auto;color:var(--blue-deep);font-weight:600">'+cd.dtxt+'</span></div></div>';
+}
+function srcHtml(s){
+  var h='<div class="sect">原始内容（source_record）</div>'
+   +'<div class="quote">'+s.quote
+   +'<div class="qmeta"><span>来源：<span class="mono">'+s.id+'</span></span><span>时间：'+s.time+'</span><span>实体：<span class="mono">'+s.ent+'</span></span><span>渠道：'+s.chan+'</span></div></div>';
+  h+='<div class="tl" style="margin-top:16px">';
+  /* 步骤1 范围解析 */
+  h+='<div class="tstep'+(s.scope.ok?'':' err')+'"><div class="tt">范围解析（business_scene）'
+   +(s.scope.ok?'<span class="chip run"><span class="dot"></span>已匹配</span>':'<span class="chip err"><span class="dot"></span>'+s.scope.err+'</span>')
+   +'</div><div class="td">'+(s.scope.ok?'匹配场景：'+s.scope.name+' · tenant cmic-yun':s.scope.detail)+'</div>'
+   +(!s.scope.ok?'<div class="note-er">抽取管线在范围解析阶段终止，后续步骤未执行 —— 这条内容「漏」在这里。</div>':'')+'</div>';
+  /* 步骤2 模型抽取 */
+  if(s.extract){
+   h+='<div class="tstep"><div class="tt">模型抽取（providers · qwen 提示词）</div><div class="td">模型 '+s.extract.model+' · 耗时 '+s.extract.dur+' · tokens '+s.extract.tokens+' · 产出候选 '+s.extract.cands.length+' 条</div><div class="tb">'
+    +s.extract.cands.map(candHtml).join('')+'</div></div>';
+   /* 步骤3 治理判定 */
+   h+='<div class="tstep"><div class="tt">治理判定（consolidation/governance）</div><div class="td">'+s.gov+'</div></div>';
+  }else{
+   h+='<div class="tstep off"><div class="tt" style="color:var(--t3)">模型抽取（未执行）</div></div><div class="tstep off"><div class="tt" style="color:var(--t3)">治理判定（未执行）</div></div>';
+  }
+  /* 步骤4 入库结果 */
+  var cls=s.result.chip;
+  h+='<div class="tstep'+(cls==='err'?' err':'')+'"><div class="tt">入库结果 <span class="chip '+cls+'"><span class="dot"></span>'+s.result.label+'</span></div>'
+   +'<div class="note-blue" style="margin-top:8px">'+s.result.note+'</div>';
+  if(s.result.ok){
+   h+='<div class="audit"><span class="mono">memory_audit_log</span><span>memory.created × '+s.extract.cands.length+'</span><span class="at">2026-10-09 15:36 · operator=worker</span></div>';
+  }
+  h+='</div></div>';
+  return h;
+}
+function openSrc(id){
+  var s=SRC[id]; if(!s) return;
+  $('#srcId').textContent=s.id;
+  $('#srcBody').innerHTML=srcHtml(s);
+  openDw('#dwSrc');
+}
+
+/* ================= 抽屉：记忆详情 ================= */
+function memHtml(m){
+  var h='<div class="quote" style="font-size:16px">'+m.c+'</div>';
+  h+='<div class="ov" style="margin-top:12px">'
+   +'<div class="cell"><div class="k">类型 cognitive_type</div><div class="v">'+(m.t==='inf'?'inference（推断）<span class="tag inf" style="vertical-align:1px;margin-left:6px">推断</span>':'fact（事实）')+'</div></div>'
+   +'<div class="cell"><div class="k">置信度 confidence</div><div class="v">'+m.conf.toFixed(2)+'</div></div>'
+   +'<div class="cell"><div class="k">状态 status</div><div class="v"><span class="chip ok" style="vertical-align:-3px"><span class="dot"></span>'+m.st+'</span></div></div>'
+   +'<div class="cell"><div class="k">版本 version / supersedes</div><div class="v">v'+m.v+' · 无前序版本</div></div>'
+   +'<div class="cell"><div class="k">实体 subject</div><div class="v mono" style="font-weight:600">'+ 'gm_user_lw' +'</div></div>'
+   +'<div class="cell"><div class="k">创建时间 created_at</div><div class="v">'+m.created+'</div></div>'
+   +'</div>';
+  h+='<div class="sect">来源追溯（这条记忆怎么抽出来的）</div>';
+  h+='<div class="quote">'+m.quote
+   +'<div class="qmeta"><span>来源：<span class="mono">'+m.src+'</span>（source_record）</span><span>渠道：ai-assistant · 回合钩子异步批量</span><span>抽取：qwen-plus</span></div></div>';
+  h+='<div class="tl" style="margin-top:14px">'
+   +'<div class="tstep"><div class="tt">保存写入 save_memory</div><div class="td">'+m.created+' · wait_for_result=false（异步）</div></div>'
+   +'<div class="tstep"><div class="tt">模型抽取产出候选</div><div class="td">候选置信度 '+m.conf.toFixed(2)+' · 类型 '+TYPE_LABEL[m.t]+(m.t==='inf'?'（inference，按产品决策并入事实记忆展示）':'')+'</div></div>'
+   +'<div class="tstep"><div class="tt">治理判定 · 入库 memory_item</div><div class="td">'+m.id+'（active · v'+m.v+'）</div></div>'
+   +'<div class="tstep"><div class="tt">向量生成 memory_embedding</div><div class="td">已生成 · text-embedding-v3 · 维度 1024</div></div>'
+   +'</div>';
+  h+='<div class="sect">相关审计（memory_audit_log）</div>';
+  h+='<div class="audit"><span class="mono">'+m.id+'</span><span>memory.created</span><span class="at">'+m.created+' · operator=worker</span></div>'
+   +'<div class="audit"><span class="mono">emb_'+m.id.slice(4)+'</span><span>embedding.generated</span><span class="at">'+m.created+' · operator=worker</span></div>';
+  return h;
+}
+function openMem(id){
+  var m=MEMS.find(function(x){return x.id===id}); if(!m) return;
+  $('#memId').textContent=m.id;
+  $('#memBodyDw').innerHTML=memHtml(m);
+  openDw('#dwMem');
+}
+
+/* ================= 抽屉 / toast 基础 ================= */
+function openDw(sel){$('#mask').classList.add('on');$(sel).classList.add('on')}
+function closeAll(){$('#mask').classList.remove('on');$$('.dw').forEach(function(d){d.classList.remove('on')})}
+$('#mask').onclick=closeAll;
+$$('[data-close]').forEach(function(b){b.onclick=closeAll});
+var toastTimer=null;
+function toast(msg){$('#toastMsg').textContent=msg;$('#toast').classList.add('on');clearTimeout(toastTimer);toastTimer=setTimeout(function(){$('#toast').classList.remove('on')},1800)}
+$$('[data-toast]').forEach(function(b){b.onclick=function(){toast(b.getAttribute('data-toast'))}});
+
+/* ================= 导航 ================= */
+var PAGES={overview:'概览统计',intake:'纳入明细',list:'记忆清单'};
+function go(page){
+  $$('.nav a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-page')===page)});
+  $$('section.panel').forEach(function(p){p.classList.toggle('on',p.id==='page-'+page)});
+  document.title='记忆运营监控平台 · '+PAGES[page];
+  if(location.hash.indexOf('#page='+page)!==0) location.hash='#page='+page;
+}
+$$('.nav a').forEach(function(a){a.onclick=function(){go(a.getAttribute('data-page'))}});
+
+/* ================= 筛选 ================= */
+function bindChips(chipsId,tbodyId,attr,nomatchId,searchId){
+  var chips=$('#'+chipsId),rows=$$('#'+tbodyId+' tbody tr');
+  function apply(){
+    var f=$('.fchip.on',chips).getAttribute('data-f');
+    var q=(searchId?$('#'+searchId).value:'').trim().toLowerCase();
+    var n=0;
+    rows.forEach(function(r){
+      var okF=(f==='all'||r.getAttribute(attr)===f);
+      var okQ=!q||r.getAttribute('data-txt').indexOf(q)>-1;
+      var show=okF&&okQ; r.classList.toggle('hide',!show); if(show)n++;
+    });
+    $('#'+nomatchId).style.display=n?'none':'block';
+  }
+  $$('.fchip',chips).forEach(function(c){c.onclick=function(){$$('.fchip',chips).forEach(function(x){x.classList.remove('on')});c.classList.add('on');apply()}});
+  if(searchId)$('#'+searchId).oninput=apply;
+}
+bindChips('intakeChips','intakeTbl','data-res','intakeNomatch','intakeSearch');
+bindChips('listChips','memTbl','data-t','memNomatch','listSearch');
+
+/* 行点击 → 抽屉 */
+$$('#intakeTbl tbody tr').forEach(function(r){r.onclick=function(){openSrc(r.getAttribute('data-src'))}});
+$$('#memTbl tbody tr').forEach(function(r){r.onclick=function(){openMem(r.getAttribute('data-mem'))}});
+
+/* ================= hash 深链 ================= */
+function parseHash(){
+  var h=location.hash.slice(1); if(!h) return;
+  var p={}; h.split('&').forEach(function(kv){var a=kv.split('=');p[a[0]]=a[1]||''});
+  if(p.page&&PAGES[p.page]) go(p.page);
+  if(p.view==='src'&&p.id&&SRC[p.id]) openSrc(p.id);
+  if(p.view==='mem'&&p.id) openMem(p.id);
+}
+parseHash();
+</script>
+</body>
+</html>
