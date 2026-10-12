@@ -34,7 +34,7 @@
           </div>
           <div v-if="idx < data.funnel.length - 1" class="fconn" :style="{ width: fw(idx) }">
             <div class="ftrap" :style="{ clipPath: trapClip(idx) }"></div>
-            <span class="fchip">{{ data.funnel[idx + 1].conv ?? '--' }}%</span>
+            <span class="fconv">{{ data.funnel[idx + 1].conv ?? '--' }}%</span>
           </div>
         </template>
         <div class="ffoot">整体纳入率 <b>{{ s.rate }}%</b>（现存记忆 {{ s.active }} / 写入保存 {{ s.saved }}）</div>

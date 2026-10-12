@@ -78,7 +78,7 @@ aside{width:196px;flex:none;background:#fff;border-right:1px solid var(--card-bd
 .f5{background:linear-gradient(90deg,#1a5ce0,#0b46bd)}
 .fconn{position:relative;height:20px;margin:0 auto}
 .ftrap{position:absolute;inset:0;background:#dce8f8}
-.fchip{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:#0e4fd8;background:#e8f1fa;border:1px solid #c9dcf5;border-radius:4px;padding:0 7px;line-height:16px;white-space:nowrap}
+.fconv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:600;color:#0e4fd8;background:#e8f1fa;border:1px solid #c9dcf5;border-radius:4px;padding:0 7px;line-height:16px;white-space:nowrap}
 .ffoot{margin:12px auto 2px;text-align:center;font-size:12px;color:var(--t2)}
 .ffoot b{color:#0e4fd8;font-weight:700}
 .ftip{position:fixed;z-index:60;width:236px;background:#fff;border:1px solid var(--card-bd);border-radius:8px;box-shadow:0 6px 20px rgba(31,39,51,.14);padding:10px 12px;pointer-events:none}
