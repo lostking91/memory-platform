@@ -181,9 +181,36 @@ table.tbl{width:100%;border-collapse:collapse}
 .disp.no{color:var(--t2);background:var(--thead);border-color:var(--card-bd)}
 .note-er{background:var(--er-bg);border:1px solid var(--er-bd);color:var(--er);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px}
 .note-blue{background:var(--blue-bg);border:1px solid var(--blue-bd);color:var(--blue-deep);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px}
+/* 记忆清单：状态筛选与失效记忆弱化 */
+.fsep{width:1px;height:18px;background:var(--card-bd);flex:none}
+.banner-er{display:flex;align-items:flex-start;gap:8px;background:var(--er-bg);border:1px solid var(--er-bd);color:var(--er);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;line-height:1.5}
+.banner-er svg.i{margin-top:2px}
+.banner-gray{background:var(--thead);border:1px solid var(--card-bd);color:var(--t2);border-radius:6px;padding:8px 12px;font-size:12.5px;margin-bottom:12px;line-height:1.5}
+.tbl tbody tr.rowdim td{color:var(--t3)}
+.tbl tbody tr.rowdim .clip{opacity:.75}
+.tbl tbody tr.rowdim:hover{background:#fafbfd}
+.fchip.st-er.on{background:var(--er)}
+.fchip.st-wn.on{background:var(--wn)}
+.fchip.st-er:not(.on) b{color:var(--er)}
+.fchip.st-wn:not(.on) b{color:var(--wn)}
 .audit{border:1px solid var(--card-bd);border-radius:6px;padding:8px 12px;margin-top:8px;font-size:12.5px;display:flex;gap:10px;align-items:center;background:#fff}
 .audit .mono{color:var(--t2)}
 .audit .at{margin-left:auto;color:var(--t3);font-size:12px;flex:none}
+/* 纳入明细：回合化表格（1 行 = 1 抽取回合） */
+.turncell{max-width:430px;padding:7px 12px!important}
+.bub{display:flex;gap:7px;align-items:baseline;margin:1px 0;max-width:100%}
+.bub .brole{flex:none;font-size:11px;font-weight:600;line-height:17px;padding:0 6px;border-radius:4px;border:1px solid}
+.bub .btxt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;color:var(--t1)}
+.bub-user .brole{color:var(--blue-deep);background:var(--blue-bg);border-color:var(--blue-bd)}
+.bub-agent .brole{color:var(--t2);background:var(--thead);border-color:var(--card-bd)}
+.bub-agent .btxt{color:var(--t2)}
+.turnmeta{display:flex;gap:8px;align-items:center;margin-top:3px}
+.turnmeta .tid{color:var(--t3);font-size:11px}
+.tag.wn{color:var(--wn);background:var(--wn-bg);border-color:var(--wn-bd);font-size:11px;line-height:16px;padding:0 5px}
+.tag.gen{color:#5b21b6;background:#f3efff;border-color:#ddd0fb;font-size:11px;line-height:16px;padding:0 5px;margin-left:6px}
+.note-amber{background:var(--wn-bg);border:1px solid var(--wn-bd);color:var(--wn);border-radius:6px;padding:9px 12px;font-size:12.5px;margin-top:8px;line-height:1.55}
+.quote.q-agent{border-left-color:#c3ccd8;background:#fafbfd;color:var(--t2)}
+.ctxnote{color:var(--wn)}
 /* toast / 状态 */
 .toast{position:fixed;top:20px;left:50%;transform:translate(-50%,-10px);background:#fff;border:1px solid var(--card-bd);border-left:3px solid var(--blue);box-shadow:0 6px 20px rgba(15,23,42,.14);border-radius:6px;padding:9px 16px;font-size:13px;color:var(--t1);z-index:80;opacity:0;pointer-events:none;transition:.25s;display:flex;gap:8px;align-items:center;max-width:70vw}
 .toast.on{opacity:1;transform:translate(-50%,0)}

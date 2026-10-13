@@ -7,6 +7,8 @@ export default {
   overview: () => api.get('/overview').then(r => r.data),
   sources: (params) => api.get('/sources', { params }).then(r => r.data),
   sourceDetail: (id) => api.get(`/sources/${id}`).then(r => r.data),
+  turns: (params) => api.get('/turns', { params }).then(r => r.data),
+  turnDetail: (id) => api.get(`/turns/${id}`).then(r => r.data),
   memories: (params) => api.get('/memories', { params }).then(r => r.data),
   memoryDetail: (id) => api.get(`/memories/${id}`).then(r => r.data)
 }
