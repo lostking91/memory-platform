@@ -2,7 +2,7 @@
   <div class="app">
     <header class="top">
       <div class="logo"><svg viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg></div>
-      <span class="pname">智能体公共记忆运营监控平台</span>
+      <span class="pname">智能体记忆底座运营监控平台</span>
       <span class="pdiv"></span>
       <span class="psub">GeneralMemory-2.1.0（MemoryCMIC）· 只读直连 GM Postgres :5433</span>
       <div class="right">
@@ -69,7 +69,7 @@ provide('toast', toast)
 function go(p) {
   page.value = p
   if (location.hash !== '#page=' + p) location.hash = '#page=' + p
-  document.title = '智能体公共记忆运营监控平台 · ' + { overview: '概览统计', intake: '纳入明细', list: '记忆清单' }[p]
+  document.title = '智能体记忆底座运营监控平台 · ' + { overview: '概览统计', intake: '纳入明细', list: '记忆清单' }[p]
 }
 provide('go', go)
 

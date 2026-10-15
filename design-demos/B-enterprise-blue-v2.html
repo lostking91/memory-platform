@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>统一记忆管理平台 · 企业蓝原型 v2（方向B深化）</title>
+<title>智能体记忆管理平台 · 企业蓝原型 v2（方向B深化）</title>
 <style>
 :root{
   --blue:#1664ff; --blue-deep:#0e4fd8; --blue-hov:#3d82ff;
@@ -293,7 +293,7 @@ textarea.inp{height:auto;min-height:96px;padding:8px 10px;resize:vertical;line-h
   <!-- 顶栏 -->
   <header class="top">
     <div class="logo"><svg viewBox="0 0 16 16"><ellipse cx="8" cy="4" rx="5" ry="2"/><path d="M3 4v8c0 1.1 2.2 2 5 2s5-.9 5-2V4"/><path d="M3 8c0 1.1 2.2 2 5 2s5-.9 5-2"/></svg></div>
-    <span class="pname">广州移动联创中心 · 统一记忆管理平台</span>
+    <span class="pname">AI+联创中心 · 智能体记忆管理平台</span>
     <span class="pdiv"></span>
     <span class="psub">GeneralMemory-2.1.0（MemoryCMIC）</span>
     <div class="right">
@@ -733,7 +733,7 @@ textarea.inp{height:auto;min-height:96px;padding:8px 10px;resize:vertical;line-h
           <div class="pf-cell"><div class="k">居住地</div><div class="v">广州天河区</div></div>
           <div class="pf-cell"><div class="k">饮食习惯</div><div class="v">喜欢广州肠粉</div></div>
           <div class="pf-cell"><div class="k">内容偏好</div><div class="v">简洁的表格输出</div></div>
-          <div class="pf-cell"><div class="k">职业</div><div class="v">广州移动联创中心（推断）</div></div>
+          <div class="pf-cell"><div class="k">职业</div><div class="v">AI+联创中心（推断）</div></div>
         </div>
         <div class="mft" style="margin-top:10px"><span>更新时间：2026-10-09 15:36</span><span>来源规则：默认画像</span></div>
       </div>
@@ -918,8 +918,8 @@ var MEMS=[
   {id:'mem_0003',c:'用户偏好简洁的表格输出。',s:0.92,scope:'范围:通用个人',u:'2026-10-09 15:36',st:'active'},
   {id:'mem_0004',c:'我住在广州天河区。',s:0.96,scope:'范围:通用个人',u:'2026-10-09 15:36',st:'active'},
   {id:'mem_0005',c:'用户的工号是 GZ-2026-0888。',s:0.99,scope:'范围:工作',u:'2026-10-09 15:36',st:'active'},
-  {id:'mem_0006',c:'用户的工位位于广州移动联创中心 12 楼。',s:0.97,scope:'范围:工作',u:'2026-10-09 15:36',st:'active'},
-  {id:'mem_0007',c:'用户任职于广州移动联创中心。',s:0.88,scope:'范围:工作',u:'2026-10-09 16:05',st:'active',inf:true}
+  {id:'mem_0006',c:'用户的工位位于智汇中心E座3楼。',s:0.97,scope:'范围:工作',u:'2026-10-09 15:36',st:'active'},
+  {id:'mem_0007',c:'用户任职于AI+联创中心。',s:0.88,scope:'范围:工作',u:'2026-10-09 16:05',st:'active',inf:true}
 ];
 function memCard(m){
   return '<div class="mem" data-mid="'+m.id+'">'
@@ -993,7 +993,7 @@ $('#btnRunNow').addEventListener('click',function(){toast('整合任务已触发
 var TASKS={
   tsk_consol_001:{st:'succeeded',cls:'ok',tr:'手动',ct:'2026-10-09 15:40',prog:'6 / 6 / 0',calls:'3',ops:[
     {id:'op_1',kind:'merge',mem:'mem_0002',desc:'合并重复的肠粉偏好记忆'},
-    {id:'op_2',kind:'inference',mem:'mem_0007',desc:'由工位+工号推断：用户任职于广州移动联创中心'},
+    {id:'op_2',kind:'inference',mem:'mem_0007',desc:'由工位+工号推断：用户任职于AI+联创中心'},
     {id:'op_3',kind:'invalidation',mem:'mem_0001',desc:'旧居住地记忆被新事实取代'}
   ]},
   tsk_consol_002:{st:'partial',cls:'warn',tr:'自动（达到变更阈值）',ct:'2026-10-09 15:12',prog:'4 / 2 / 2',calls:'2',ops:[
